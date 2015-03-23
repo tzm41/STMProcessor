@@ -1,0 +1,72 @@
+\input{settings}
+%\usepackage[nottoc, notlot, notlof]{tocbibind} % add bib to table of content
+
+%----------------------------------------------------------------------------------------
+%	PLOT DATA
+%----------------------------------------------------------------------------------------
+
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.11}
+\usepgfplotslibrary{statistics}
+
+%----------------------------------------------------------------------------------------
+%	DOCUMENT INFORMATION
+%----------------------------------------------------------------------------------------
+
+\title{Directed Study \\ High-$T_c$ Superconductor} % Title
+
+\author{Zhuoming \textsc{Tan}} % Author name
+
+\date{\today} % Date for the report
+
+\begin{document}
+
+	\maketitle % Insert the title, author and date
+
+	\begin{center}
+		\begin{tabular}{l r}
+			Instructor: & Professor Michael Boyer % Instructor/supervisor
+		\end{tabular}
+	\end{center}
+
+	%----------------------------------------------------------------------------------------
+	%	SECTION 1
+	%----------------------------------------------------------------------------------------
+
+	\section{Introduction} % (fold)
+	\label{sec:introduction}
+	The process steps are:
+	\begin{enumerate}
+		\item Import data from csv file \textsf{0052}, \textsf{0053}, and \textsf{0054}.
+		\item Remove outlying y series $2\sigma$ away from mean value.
+		\item Normalize each spectrum with the sum of mean value.
+		\item Boxcar average filtered data with width $=10$.
+		\item Calculate gap size from filtered data, with the fourth derivative of the seventh degree polynomial fit of each spectrum, assuming the peak is at \SI{0}{\milli\volt}.
+		\item Visualize data.
+	\end{enumerate}
+	% section introduction (end)
+
+	\section{Boxcar width: 10} % (fold)
+	\label{sec:10}
+	\begin{figure}[H]
+		\centering
+		\begin{tikzpicture}
+			\begin{axis}[width = \textwidth, xlabel = {Gap Size (V)}, ylabel = {Frequency}, ybar, nodes near coords, nodes near coords align = above right, every node near coord/.append style={font=\tiny}, xtick = {0.100, 0.110,...,0.300}, x tick label style = {rotate=45, anchor=north east, /pgf/number format/.cd, fixed, precision = 3}, xtick pos = left, ytick pos = left]
+				\addplot +[hist={bins = 20, data min = 0.100, data max = 0.300}] table [y index = 0] {../Data/Out/gap_10.csv};
+			\end{axis}
+		\end{tikzpicture}
+		\caption{Histogram of gap sizes, 10-boxcared, data size 1476}
+	\end{figure}
+
+	\begin{figure}[H]
+		\centering
+		\begin{tikzpicture}
+			\begin{axis}[width = \textwidth, xlabel = {Voltage (V)}, ylabel = {nS}]
+				\addplot [thick, mesh, point meta = 1] table [x index = {0}, y index = {1}, col sep = comma, header = has colnames] {../Processor/test10xy.csv};
+				\addplot [domain=0:0.5, samples=100] {-6.494e-08*x^7-9.638e-08*x^6+5.063e-08*x^5-9.957e-09*x^4-7.412e-11*x^3+2.126e-10*x^2-9.329e-12*x+2.68e-12};
+			\end{axis}
+		\end{tikzpicture}
+		\caption{Sample Fit from 0052}
+	\end{figure}
+	% section 10 (end)
+\end{document}
