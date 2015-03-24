@@ -1,5 +1,8 @@
 import sqlite3 as db
 
+__author__ = 'Colin Tan'
+__version__ = 0.9
+
 conn = db.connect("database.db")
 cursor = conn.cursor()
 
