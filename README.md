@@ -3,7 +3,7 @@ STM data processing program
 ## Purpose
 Import, store, and sort data obtained from STM instrument. Process and interpret the data.
 ## Structure
-Currently a Python processing program, and LaTeX visulization.
+Currently a Python processing program, and LaTeX visulization. SQLite database is being implemented.
 ## TODO
 * Database infrastructure
 * Exchangable processing modules
