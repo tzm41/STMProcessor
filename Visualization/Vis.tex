@@ -51,8 +51,8 @@
 	\begin{figure}[H]
 		\centering
 		\begin{tikzpicture}
-			\begin{axis}[width = \textwidth, xlabel = {Gap Size (V)}, ylabel = {Frequency}, ybar, nodes near coords, nodes near coords align = above right, every node near coord/.append style={font=\tiny}, xtick = {0.100, 0.110,...,0.300}, x tick label style = {rotate=45, anchor=north east, /pgf/number format/.cd, fixed, precision = 3}, xtick pos = left, ytick pos = left]
-				\addplot +[hist={bins = 20, data min = 0.100, data max = 0.300}] table [y index = 0] {../Data/Out/gap_10.csv};
+			\begin{axis}[width = \textwidth, xlabel = {Gap Size (V)}, ylabel = {Frequency}, ybar, nodes near coords, nodes near coords align = above right, every node near coord/.append style={font=\tiny}, xtick = {0.000, 0.010,...,0.400}, x tick label style = {rotate=45, anchor=north east, /pgf/number format/.cd, fixed, precision = 3}, xtick pos = left, ytick pos = left]
+				\addplot +[hist={bins = 40, data min = 0.000, data max = 0.400}] table [y index = 0] {../Data/Out/gap_10.csv};
 			\end{axis}
 		\end{tikzpicture}
 		\caption{Histogram of gap sizes, 10-boxcared, data size 1476}
@@ -61,12 +61,13 @@
 	\begin{figure}[H]
 		\centering
 		\begin{tikzpicture}
-			\begin{axis}[width = \textwidth, xlabel = {Voltage (V)}, ylabel = {nS}]
-				\addplot [thick, mesh, point meta = 1] table [x index = {0}, y index = {1}, col sep = comma, header = has colnames] {../Processor/test10xy.csv};
-				\addplot [domain=0:0.5, samples=100] {-6.494e-08*x^7-9.638e-08*x^6+5.063e-08*x^5-9.957e-09*x^4-7.412e-11*x^3+2.126e-10*x^2-9.329e-12*x+2.68e-12};
+			\begin{axis}[width = 0.9\textwidth, height = 1.3\textwidth, colorbar, colorbar style = /pgf/number format/fixed, xlabel = {Voltage (mV)}, ylabel = {nS}]
+				\foreach \i in {0.025,0.05,0.075,0.1,0.125,0.15,0.175,0.2,0.225,0.25,0.275,0.3,0.325,0.35}{
+					\addplot [thick, mesh, point meta = \i] table [x = 0, y expr = \thisrow{\i} + 3e-11 * \i, col sep = comma, header = has colnames] {../Data/Out/ave_10.csv};
+				}
 			\end{axis}
 		\end{tikzpicture}
-		\caption{Sample Fit from 0052}
+		\caption{Averaged spectra for different gap sizes, with $y-$offset}
 	\end{figure}
 	% section 10 (end)
 \end{document}

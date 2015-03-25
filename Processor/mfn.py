@@ -1,7 +1,8 @@
+#!/usr/bin/env python
 import numpy as np
 
 __author__ = 'Colin Tan'
-__version__ = 2.1
+__version__ = '2.3'
 
 
 # calculate mean for a number list
@@ -176,26 +177,32 @@ def linear_regression(x, y):
 # polynomial regression gap computation algorithm
 # by computing fourth degree polynomial and taking
 # second derivative to locate the gap
-
 def poly_gap(xser, yser, gapmin, gapmax):
     # calculate polyfit, and convert it into 1D object
     z = np.poly1d(np.polyfit(xser, yser, 5))
-    # take third derivative
+    # take derivatives
     deriv3 = z.deriv().deriv().deriv()
     # find the peak of the third derivative
-    roots = deriv3.r
-    return pick_root(roots.tolist())
+    root3 = deriv3.r
+    return pick_root(root3.tolist())
 
 
+# custom picking out roots
+# smaller in real roots
+# and single real root
 def pick_root(roots):
     if len(roots) == 2:
-        root1 = roots[0].real
-        root2 = roots[1].real
-        if root1 < 0.0:
-            return root2
-        elif root2 < 0.0:
-            return root1
+        root1 = roots[0]
+        root2 = roots[1]
+        if root1.real < 0.0:
+            if root2.imag == 0:
+                return root2.real
+        elif root2.real < 0.0:
+            if root1.imag == 0:
+                return root1.real
+        elif root1.imag == 0 and root2.imag == 0:
+            return min(root1.real, root2.real)
         else:
-            return min(root1, root2)
+            return 0.0
     else:
         return 0.0

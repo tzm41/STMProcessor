@@ -1,9 +1,10 @@
+#!/usr/bin/env python
 import os.path
 import csv
 import mfn
 
 __author__ = 'Colin Tan'
-__version__ = 1.1
+__version__ = '1.1'
 
 
 # generate file path base on current python script path
