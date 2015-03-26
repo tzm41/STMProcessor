@@ -14,8 +14,3 @@ Main packages used:
  * tikz and
  * pgfplots are heavily relied on for graphing results.
 * SQLite
-
-## TODO
-* Database infrastructure
-* Exchangable processing modules
-* Front end - GUI
