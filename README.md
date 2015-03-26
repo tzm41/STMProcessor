@@ -1,7 +1,9 @@
 # STMProcessor
 STM data processing program
+
 ## Purpose
 Import, store, and sort data obtained from STM instrument. Process and interpret the data.
+
 ## Structure
 Main packages used:
 * Python
@@ -12,6 +14,7 @@ Main packages used:
  * tikz and
  * pgfplots are heavily relied on for graphing results.
 * SQLite
+
 ## TODO
 * Database infrastructure
 * Exchangable processing modules
