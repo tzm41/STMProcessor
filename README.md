@@ -18,4 +18,4 @@ Main packages used:
 ## TODO
 * Database infrastructure
 * Exchangable processing modules
-* Front end - GUI or web app
+* Front end - GUI
