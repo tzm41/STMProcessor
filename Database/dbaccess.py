@@ -7,14 +7,12 @@ filename = 'database.db'
 
 
 # Displays number of spectra in the database.
-def displayStudentList():
+def displaySpectraNum():
     conn = db.connect(filename)
     cursor = conn.cursor()
-    print
-    print "Display number of spectra."
     sql = "SELECT COUNT(*) FROM spectrum"
     cursor.execute(sql)
 
-    data = cursor.fetchall()
-    print str(data)
+    data = cursor.fetchone()
+    print("\nNumber of spectra is {}.".format(str(data[0])))
     conn.close()
