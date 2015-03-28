@@ -5,7 +5,7 @@ import sys
 import mfn
 
 __author__ = 'Colin Tan'
-__version__ = '2.3.1'
+__version__ = 'c2.3.1'
 
 
 # generate file path base on current python script path
@@ -43,7 +43,7 @@ def main(argv):
     boxcar_width = 5
     gap_size_min = 0.025
     gap_size_max = 0.425
-    csv_delim = ';'
+    csv_delim = ','
     xstep = 0.025
 
     path_read = []
@@ -79,7 +79,7 @@ def main(argv):
         txt_file.write('Data read from file {}.\n'.format(path))
 
         # parse csv file with custom delimiter
-        with open(path, 'rb') as csv_file:
+        with open(path, 'rU') as csv_file:
             filecontent = csv.reader(csv_file, delimiter=csv_delim)
             openedFile = [row for row in filecontent]
 
@@ -183,4 +183,4 @@ def main(argv):
     txt_file.close()
 
 if __name__ == "__main__":
-    main([None, ['../Data/0052', '../Data/0053', '../Data/0054'], 10])
+    main([['/Users/colin/Downloads/UD78-dIdV-297k.csv'], None, 10])
