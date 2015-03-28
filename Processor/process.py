@@ -5,7 +5,7 @@ import sys
 import mfn
 
 __author__ = 'Colin Tan'
-__version__ = '2.3.1'
+__version__ = 'c2.3.1'
 
 
 # generate file path base on current python script path
