@@ -5,7 +5,7 @@ import sys
 import mfn
 
 __author__ = 'Colin Tan'
-__version__ = '2.3'
+__version__ = '2.3.1'
 
 
 # generate file path base on current python script path
@@ -46,21 +46,25 @@ def main(argv):
     csv_delim = ';'
     xstep = 0.025
 
+    path_read = []
     if len(argv) == 1:
         absReadPath = argv[0]
     elif len(argv) == 2:
         absReadPath = None
         relReadPath = argv[1]
     elif len(argv) == 3:
-        absReadPath = None
+        absReadPath = argv[0]
         relReadPath = argv[1]
         boxcar_width = argv[2]
+        if absReadPath is not None:
+            for path in absReadPath:
+                path_read.append(path)
+        else:
+            for path in relReadPath:
+                path_read.append(gen_path(path, None))
     else:
         print 'Invalid arguments'
         sys.exit()
-    path_read = []
-    for path in relReadPath:
-        path_read.append(gen_path(path, absReadPath))
     direname = os.path.dirname(path_read[0])
     path_gap = '{}/Out/gap_{}.csv'.format(direname, boxcar_width)
     path_log = '{}/Out/log_{}.txt'.format(direname, boxcar_width)
