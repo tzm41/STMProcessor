@@ -4,18 +4,6 @@ File contains x series with 41 points.
 File contains 500 y series.
 For defined 2 * sigma threshold, 163 y series are excluded.
 Boxcar width 10.
------0053-----
-Data read from file /Users/colin/Dropbox/Documents/Study/Research/STMProcessor/Data/0053.
-File contains x series with 41 points.
-File contains 500 y series.
-For defined 2 * sigma threshold, 87 y series are excluded.
-Boxcar width 10.
------0054-----
-Data read from file /Users/colin/Dropbox/Documents/Study/Research/STMProcessor/Data/0054.
-File contains x series with 41 points.
-File contains 500 y series.
-For defined 2 * sigma threshold, 94 y series are excluded.
-Boxcar width 10.
 -----summary-----
-Gap stat after boxcar written to file /Users/colin/Dropbox/Documents/Study/Research/STMProcessor/Data/Out/gap_10.csv, containing 1476 numbers.
+Gap stat after boxcar written to file /Users/colin/Dropbox/Documents/Study/Research/STMProcessor/Data/Out/gap_10.csv, containing 492 numbers.
 Average in gap size group written to file /Users/colin/Dropbox/Documents/Study/Research/STMProcessor/Data/Out/ave_10.csv, containing 17 series
