@@ -5,7 +5,7 @@ import sys
 import mfn
 
 __author__ = 'Colin Tan'
-__version__ = 'c2.3.1'
+__version__ = '2.3.5'
 
 
 # generate file path base on current python script path
@@ -42,7 +42,7 @@ def main(argv):
     stdev_multi = 2
     boxcar_width = 5
     gap_size_min = 0.025
-    gap_size_max = 0.425
+    gap_size_max = 0.400
     csv_delim = ','
     xstep = 0.025
 
@@ -139,10 +139,13 @@ def main(argv):
             .format(stdev_multi, len(exclusions)))
 
         # boxcar before gap determination
-        boxing = mfn.boxcar(yseries, boxcar_width, exclusions)
-        print 'Boxcar width {}.'.format(boxcar_width)
-        txt_file.write('Boxcar width {}.\n'.format(boxcar_width))
-        boxed.extend(boxing)
+        if boxcar_width == 0:
+            boxed = yseries
+        else:
+            boxing = mfn.boxcar(yseries, boxcar_width, exclusions)
+            print 'Boxcar width {}.'.format(boxcar_width)
+            txt_file.write('Boxcar width {}.\n'.format(boxcar_width))
+            boxed.extend(boxing)
 
     txt_file.write('-----summary-----\n')
     # count and export gap sizes for boxcared data
@@ -183,4 +186,4 @@ def main(argv):
     txt_file.close()
 
 if __name__ == "__main__":
-    main([['/Users/colin/Downloads/UD78-dIdV-297k.csv'], None, 10])
+    main([None, ['../Data/Converted/Upward.csv'], 0])

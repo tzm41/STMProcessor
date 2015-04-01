@@ -12,7 +12,7 @@ cursor.execute(sql)
 
 sql = """CREATE TABLE spectrum
 (
-id int PRIMARY KEY,
+id int PRIMARY KEY AUTO_INCREMENT,
 x text,
 y text
 )

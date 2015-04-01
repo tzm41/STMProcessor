@@ -2,7 +2,7 @@
 import numpy as np
 
 __author__ = 'Colin Tan'
-__version__ = '2.3'
+__version__ = '2.3.5'
 
 
 # calculate mean for a number list
@@ -202,6 +202,8 @@ def pick_root(roots):
                 return root1.real
         elif root1.imag == 0 and root2.imag == 0:
             return min(root1.real, root2.real)
+        elif root1.imag != 0:
+            return root1.real
         else:
             return 0.0
     else:
