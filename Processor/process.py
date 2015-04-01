@@ -5,7 +5,11 @@ import sys
 import mfn
 
 __author__ = 'Colin Tan'
+<<<<<<< HEAD
 __version__ = '2.3.5'
+=======
+__version__ = '2.3.1'
+>>>>>>> origin/master
 
 
 # generate file path base on current python script path
@@ -42,8 +46,13 @@ def main(argv):
     stdev_multi = 2
     boxcar_width = 5
     gap_size_min = 0.025
+<<<<<<< HEAD
     gap_size_max = 0.400
     csv_delim = ','
+=======
+    gap_size_max = 0.425
+    csv_delim = ';'
+>>>>>>> origin/master
     xstep = 0.025
 
     path_read = []
@@ -52,7 +61,7 @@ def main(argv):
     elif len(argv) == 2:
         absReadPath = None
         relReadPath = argv[1]
-    elif len(argv) == 3:
+    elif len(argv) == 4:
         absReadPath = argv[0]
         relReadPath = argv[1]
         boxcar_width = argv[2]
@@ -62,6 +71,7 @@ def main(argv):
         else:
             for path in relReadPath:
                 path_read.append(gen_path(path, None))
+        csv_delim = argv[3]
     else:
         print 'Invalid arguments'
         sys.exit()
@@ -79,6 +89,7 @@ def main(argv):
         txt_file.write('Data read from file {}.\n'.format(path))
 
         # parse csv file with custom delimiter
+        # 'rU' dealing with lines not ending with delim
         with open(path, 'rU') as csv_file:
             filecontent = csv.reader(csv_file, delimiter=csv_delim)
             openedFile = [row for row in filecontent]
@@ -186,4 +197,9 @@ def main(argv):
     txt_file.close()
 
 if __name__ == "__main__":
+<<<<<<< HEAD
     main([None, ['../Data/Converted/Upward.csv'], 0])
+=======
+    # format: main([absolute path, relative path, boxcar width, csv delimiter])
+    main([None, ['../Data/0052'], 10, ';'])
+>>>>>>> origin/master
