@@ -1,0 +1,78 @@
+\input{settings}
+%\usepackage[nottoc, notlot, notlof]{tocbibind} % add bib to table of content
+
+%----------------------------------------------------------------------------------------
+%	PLOT DATA
+%----------------------------------------------------------------------------------------
+
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.11}
+\usepgfplotslibrary{statistics}
+
+%----------------------------------------------------------------------------------------
+%	DOCUMENT INFORMATION
+%----------------------------------------------------------------------------------------
+
+\title{Directed Study \\ High-$T_c$ Superconductor} % Title
+
+\author{Zhuoming \textsc{Tan}} % Author name
+
+\date{\today} % Date for the report
+
+\begin{document}
+
+	\maketitle % Insert the title, author and date
+
+	\begin{center}
+		\begin{tabular}{l r}
+			Instructor: & Professor Michael Boyer % Instructor/supervisor
+		\end{tabular}
+	\end{center}
+
+	%----------------------------------------------------------------------------------------
+	%	SECTION 1
+	%----------------------------------------------------------------------------------------
+
+	\section{Introduction}\label{sec:introduction}
+	Gap test for different types of spectra. Gaps determined by the algorithm are marked on the graph.
+	% section introduction (end)
+
+	\section{Downward}\label{sec:d}
+	\begin{figure}[H]
+		\centering
+		\begin{tikzpicture}
+			\begin{axis}[width = \textwidth, xlabel = {Voltage (mV)}, ylabel = {nS}]
+				\addplot[mark = none, blue, thick, smooth] table [x index = 0, y index = 1, col sep = comma] {Downward.csv};
+				\node[coordinate, pin={[rotate=90]right:{0.17373}}] at (axis cs:0.17373,4.8e-12) {};
+			\end{axis}
+		\end{tikzpicture}
+		\caption{Actual downward spectrum}
+	\end{figure}
+	% section d (end)
+
+	\section{Flat}\label{sec:f}
+	\begin{figure}[H]
+		\centering
+		\begin{tikzpicture}
+			\begin{axis}[width = \textwidth, xlabel = {Voltage (mV)}, ylabel = {nS}]
+				\addplot[mark = none, blue, thick, smooth] table [x index = 0, y index = 1, col sep = comma] {Flat.csv};
+				\node[coordinate, pin={[rotate=90]right:{0.35971}}] at (axis cs:0.35971,4.3e-12) {};
+			\end{axis}
+		\end{tikzpicture}
+		\caption{Actual flat spectrum}
+	\end{figure}
+	% section f (end)
+
+	\section{Upward}\label{sec:u}
+	\begin{figure}[H]
+		\centering
+		\begin{tikzpicture}
+			\begin{axis}[width = \textwidth, xlabel = {Voltage (mV)}, ylabel = {nS}]
+				\addplot[mark = none, blue, thick, smooth] table [x index = 0, y index = 1, col sep = comma] {Upward.csv};
+				\node[coordinate, pin={[rotate=90]right:{0.14720}}] at (axis cs:0.14720,2.4e-12) {};
+			\end{axis}
+		\end{tikzpicture}
+		\caption{Actual upward spectrum}
+	\end{figure}
+	% section u (end)
+\end{document}
