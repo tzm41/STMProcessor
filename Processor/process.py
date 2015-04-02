@@ -5,11 +5,7 @@ import sys
 import mfn
 
 __author__ = 'Colin Tan'
-<<<<<<< HEAD
 __version__ = '2.3.5'
-=======
-__version__ = '2.3.1'
->>>>>>> origin/master
 
 
 # generate file path base on current python script path
@@ -46,13 +42,8 @@ def main(argv):
     stdev_multi = 2
     boxcar_width = 5
     gap_size_min = 0.025
-<<<<<<< HEAD
-    gap_size_max = 0.400
-    csv_delim = ','
-=======
     gap_size_max = 0.425
     csv_delim = ';'
->>>>>>> origin/master
     xstep = 0.025
 
     path_read = []
@@ -197,9 +188,5 @@ def main(argv):
     txt_file.close()
 
 if __name__ == "__main__":
-<<<<<<< HEAD
-    main([None, ['../Data/Converted/Upward.csv'], 0])
-=======
     # format: main([absolute path, relative path, boxcar width, csv delimiter])
     main([None, ['../Data/0052'], 10, ';'])
->>>>>>> origin/master
