@@ -1,8 +1,0 @@
------Upward.csv-----
-Data read from file /Users/colin/Dropbox/Documents/Study/Research/STMProcessor/Data/Converted/Upward.csv.
-File contains x series with 41 points.
-File contains 1 y series.
-For defined 2 * sigma threshold, 1 y series are excluded.
------summary-----
-Gap stat after boxcar written to file /Users/colin/Dropbox/Documents/Study/Research/STMProcessor/Data/Converted/Out/gap_0.csv, containing 1 numbers.
-Average in gap size group written to file /Users/colin/Dropbox/Documents/Study/Research/STMProcessor/Data/Converted/Out/ave_0.csv, containing 16 series
