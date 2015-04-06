@@ -188,8 +188,7 @@ def poly_gap(xser, yser, gapmin, gapmax):
 
 
 # custom picking out roots
-# smaller in real roots
-# and single real root
+# smaller in real roots, and single real root
 def pick_root(roots):
     if len(roots) == 2:
         root1 = roots[0]
