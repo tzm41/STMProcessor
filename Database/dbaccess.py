@@ -10,7 +10,7 @@ filename = 'database.db'
 def displaySpectraNum():
     conn = db.connect(filename)
     cursor = conn.cursor()
-    sql = "SELECT COUNT(*) FROM spectrum"
+    sql = "SELECT COUNT(*) FROM SpecData"
     cursor.execute(sql)
 
     data = cursor.fetchone()
