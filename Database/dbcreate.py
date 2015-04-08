@@ -4,24 +4,22 @@ from sqlite3 import OperationalError
 __author__ = 'Colin Tan'
 __version__ = 1.0
 
+fd = open('dbcreate.sql', 'r')
+sqlFile = fd.read()
+fd.close()
+
+sqlcmds = sqlFile.split(";")
+
 conn = db.connect("database.db")
 cursor = conn.cursor()
 
-sql = """DROP TABLE IF EXISTS spectrum"""
-
-cursor.execute(sql)
-
-sql = """CREATE TABLE spectrum
-(
-id int PRIMARY KEY AUTO_INCREMENT,
-x text,
-y text
-)
-"""
-
-cursor.execute(sql)
+for cmd in sqlcmds:
+    try:
+        cursor.execute(cmd)
+    except OperationalError, msg:
+        print("Command skipped: ", msg)
 
 conn.commit()
 cursor.close()
 conn.close()
-print "Finished creating the database"
+print("Finished creating the database")
