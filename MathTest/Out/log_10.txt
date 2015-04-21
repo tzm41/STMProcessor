@@ -1,0 +1,9 @@
+-----upward_new3.csv-----
+Data read from file /Users/colin/Dropbox/Documents/Study/Research/STMProcessor/MathTest/upward_new3.csv.
+File contains x series with 41 points.
+File contains 1 y series.
+For defined 2 * sigma threshold, 1 y series are excluded.
+Boxcar width 10.
+-----summary-----
+Gap stat after boxcar written to file /Users/colin/Dropbox/Documents/Study/Research/STMProcessor/MathTest/Out/gap_10.csv, containing 0 numbers.
+Average in gap size group written to file /Users/colin/Dropbox/Documents/Study/Research/STMProcessor/MathTest/Out/ave_10.csv, containing 17 series

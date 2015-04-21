@@ -39,11 +39,11 @@ def drange(start, end, step):
 def main(argv):
     # predefined vars
     stdev_multi = 2
-    gap_size_min = 1
-    gap_size_max = 3
+    gap_size_min = 0.025
+    gap_size_max = 0.425
     csv_delim = ','
 
-    path_read = '{}/fakeSpectra2'.format(os.path.dirname(__file__))
+    path_read = '{}/../MathTest/upward_new3.csv'.format(os.path.dirname(__file__))
 
     xs = []
     print 'Data read from file {}.'.format(path_read)
@@ -104,7 +104,7 @@ def main(argv):
     for col in yseries:
         # saving only five decimal places
         # have to use col[::-1] to reverse the list
-        gap_stat.append(["{0:.5f}".format(mfn.poly_gap(xs[21:41], col[21:41],
+        gap_stat.append(["{0:.5f}".format(mfn.poly_gap(xs[0:20], col[0:20],
                         gap_size_min, gap_size_max))])
     print gap_stat
 

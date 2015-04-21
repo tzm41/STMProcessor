@@ -189,4 +189,4 @@ def main(argv):
 
 if __name__ == "__main__":
     # format: main([absolute path, relative path, boxcar width, csv delimiter])
-    main([None, ['../Data/0052'], 10, ';'])
+    main([None, ['../MathTest/upward_new3.csv'], 10, ','])
