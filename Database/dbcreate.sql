@@ -17,7 +17,7 @@ CREATE TABLE SpecData (
 DROP TABLE IF EXISTS GapData;
 
 CREATE TABLE GapData (
-	SpecID integer,
+	SpecID integer PRIMARY KEY NOT NULL,
 	GapSize real,
 	BoxcarWidth real,
 	FOREIGN KEY (SpecID) REFERENCES SpecData(SpecID)
