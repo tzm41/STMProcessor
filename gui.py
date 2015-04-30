@@ -1,8 +1,15 @@
 from Tkinter import *
 import tkFileDialog
-import Tkconstants
+import Tkconstants as Tkc
 from Database import dbaccess as dba
 from Database import dbcreate as dbc
+import matplotlib
+from numpy import arange, sin, pi
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2TkAgg
+# implement the default mpl key bindings
+from matplotlib.backend_bases import key_press_handler
+from matplotlib.figure import Figure
+# matplotlib.use('TkAgg')
 
 __author__ = 'Colin Tan'
 __version__ = '0.6'
@@ -10,7 +17,6 @@ __version__ = '0.6'
 
 class MainApp:
     def __init__(self, master, title):
-
         self.sourcefile = None
 
         self.root = master
@@ -49,6 +55,10 @@ class MainApp:
             root, text="Insert spectra", command=self.insertSpectrum)
         self.button_insertspec.grid(row=5, columnspan=2)
 
+        self.button_displayspec = Button(
+            root, text="Display spectra", command=self.displaySpectrumFromID)
+        self.button_displayspec.grid(row=6, column=0)
+
     def menu(self, master):
         menubar = Menu(master)
         filemenu = Menu(menubar, tearoff=0)
@@ -79,7 +89,6 @@ class MainApp:
         # get filename
         filename = tkFileDialog.askopenfilename(**file_opt)
 
-        # open file on your own
         if filename:
             self.sourcefile = filename
 
@@ -93,7 +102,35 @@ class MainApp:
         top.title("Number of spectra")
         msg = Message(top, text=text, width=300)
         msg.pack()
-        button = Button(top, text="Close", comman=top.destroy)
+        button = Button(top, text="Close", command=top.destroy)
+        button.pack()
+
+    def displaySpectrumFromID(self):
+
+        def display():
+            id = entry.get()
+            print id
+            f = Figure(figsize=(5, 4), dpi=100)
+            a = f.add_subplot(111)
+            t = arange(0.0, 3.0, 0.01)
+            s = sin(2*pi*t)
+
+            a.plot(t, s)
+            canvas = FigureCanvasTkAgg(f, master=top)
+            canvas.show()
+            canvas.get_tk_widget().pack(side=Tkc.TOP, fill=Tkc.BOTH, expand=1)
+
+            toolbar = NavigationToolbar2TkAgg(canvas, top)
+            toolbar.update()
+            canvas._tkcanvas.pack(side=Tkc.TOP, fill=Tkc.BOTH, expand=1)
+
+        top = Toplevel()
+        top.title("Display spectrum")
+        label = Label(top, text="Enter spectrum ID")
+        label.pack()
+        entry = Entry(top)
+        entry.pack()
+        button = Button(top, text="Display", command=display)
         button.pack()
 
     def insertSpectrum(self):
@@ -106,7 +143,7 @@ class FileDialog(Frame):
         Frame.__init__(self, root)
 
         # button options
-        button_opt = {'fill': Tkconstants.BOTH, 'padx': 5, 'pady': 5}
+        button_opt = {'fill': Tkc.BOTH, 'padx': 5, 'pady': 5}
 
         # define buttons
         # Button(self, text='Open File',
