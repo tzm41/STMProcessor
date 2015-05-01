@@ -207,3 +207,8 @@ def pick_root(roots):
             return 0.0
     else:
         return 0.0
+
+
+# transpose 1D vector from horizontal to vertical
+def transpose1d(vec):
+    return [[row] for row in vec]

@@ -2,6 +2,7 @@
 import os.path
 import csv
 import mfn
+import numpy as np
 
 __author__ = 'Colin Tan'
 __version__ = '1.1'
