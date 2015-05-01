@@ -1,4 +1,4 @@
-# STMProcessor
+# STMPLab
 STM data processing program
 
 ## Purpose
