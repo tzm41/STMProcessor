@@ -29,7 +29,7 @@ def getSpectrumFromID(id):
 
     data = cursor.fetchone()
     conn.close()
-    print(data)
+    return data
 
 
 # get spectra from doping

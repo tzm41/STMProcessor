@@ -3,11 +3,10 @@ import tkFileDialog
 import Tkconstants as Tkc
 from Database import dbaccess as dba
 from Database import dbcreate as dbc
-import matplotlib
-from numpy import arange, sin, pi
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2TkAgg
-# implement the default mpl key bindings
-from matplotlib.backend_bases import key_press_handler
+from Database import dbapi
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from matplotlib.backends.backend_tkagg import NavigationToolbar2TkAgg
 from matplotlib.figure import Figure
 # matplotlib.use('TkAgg')
 
@@ -106,31 +105,36 @@ class MainApp:
         button.pack()
 
     def displaySpectrumFromID(self):
-
-        def display():
-            id = entry.get()
-            print id
-            f = Figure(figsize=(5, 4), dpi=100)
-            a = f.add_subplot(111)
-            t = arange(0.0, 3.0, 0.01)
-            s = sin(2*pi*t)
-
-            a.plot(t, s)
-            canvas = FigureCanvasTkAgg(f, master=top)
-            canvas.show()
-            canvas.get_tk_widget().pack(side=Tkc.TOP, fill=Tkc.BOTH, expand=1)
-
-            toolbar = NavigationToolbar2TkAgg(canvas, top)
-            toolbar.update()
-            canvas._tkcanvas.pack(side=Tkc.TOP, fill=Tkc.BOTH, expand=1)
-
         top = Toplevel()
         top.title("Display spectrum")
         label = Label(top, text="Enter spectrum ID")
         label.pack()
         entry = Entry(top)
         entry.pack()
-        button = Button(top, text="Display", command=display)
+
+        fig = plt.figure(figsize=(5, 5), dpi=100)
+        ax = fig.add_subplot(111)
+        canvas = FigureCanvasTkAgg(fig, master=top)
+        toolbar = NavigationToolbar2TkAgg(canvas, top)
+
+        def display(fig, ax, canvas, toolbar):
+            plt.clf()
+            id = entry.get()
+            specData = dba.getSpectrumFromID(int(id))
+            xseries = dbapi.textToSeries(specData[1])
+            yseries = dbapi.textToSeries(specData[2])
+
+            ax.plot(xseries, yseries, '-o')
+            canvas.show()
+            canvas.get_tk_widget().pack(
+                side=Tkc.BOTTOM, fill=Tkc.BOTH, expand=1)
+
+            toolbar.update()
+            canvas._tkcanvas.pack(side=Tkc.TOP, fill=Tkc.BOTH, expand=1)
+
+        button = Button(
+            top, text="Display",
+            command=lambda: display(fig, ax, canvas, toolbar))
         button.pack()
 
     def insertSpectrum(self):
