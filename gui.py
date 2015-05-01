@@ -5,7 +5,9 @@ import tkFileDialog
 import Tkconstants as Tkc
 from Database import dbaccess as dba, dbcreate as dbc, dbupdate as dbu, dbapi
 from Processor import processor
+import matplotlib
 import matplotlib.pyplot as plt
+import numpy as np
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.backends.backend_tkagg import NavigationToolbar2TkAgg
 from Processor import mfn
@@ -92,7 +94,7 @@ class MainApp:
                     filepath_var.set(
                         "Multiple files, including {}".format(filename[0]))
 
-        def insertSpectrum():
+        def insertSpectrum(top):
             doping = entry_doping.get()
             boxcar = entry_boxcar.get()
             delim = entry_delim.get()
@@ -121,6 +123,8 @@ class MainApp:
                 xs, yss = processor.readFile(self.sourcefile, delim)
                 for ys in yss:
                     dbu.insertSpectrum(xs, ys, doping)
+                msgWindow("Done", "Successfully inserted spectrum")
+                top.destroy()
 
         # internal testing
         def showsourcefilename():
@@ -184,7 +188,7 @@ class MainApp:
         label_file.grid(row=2, column=1)
 
         button_insertspec = tk.Button(
-            top, text="Insert spectra", command=insertSpectrum)
+            top, text="Insert spectra", command=lambda: insertSpectrum(top))
         button_insertspec.grid(row=3)
 
         insert_var = tk.StringVar()
@@ -224,7 +228,7 @@ class MainApp:
             button_exc = tk.Button(
                 top, text="Export",
                 command=lambda: exportSpec(
-                    data.xseries, data.yseries, data.outdir))
+                    data.xseries, data.yseries, data.outdir, top))
             button_exc.pack()
             button_close = tk.Button(
                 top, text="Close", command=top.destroy)
@@ -271,15 +275,20 @@ class MainApp:
             command=lambda: clearCanvas(canvas))
         button_clear.pack(side=tk.LEFT)
 
-        button_close = tk.Button(
-            frame_button, text="Close", command=top.destroy)
-        button_close.pack(side=tk.LEFT)
+        button_gap = tk.Button(
+            frame_button, text="Gap",
+            command=lambda: showGap(ax, canvas, toolbar))
+        button_gap.pack(side=tk.LEFT)
 
         button_export = tk.Button(
             frame_button, text="Export...", command=export)
         button_export.pack(side=tk.LEFT)
 
-        def exportSpec(xs, yss, path):
+        button_close = tk.Button(
+            frame_button, text="Close", command=top.destroy)
+        button_close.pack(side=tk.LEFT)
+
+        def exportSpec(xs, yss, path, top):
             if xs is None or yss is None or path is None:
                 msgWindow("Error", "Something is missing")
             else:
@@ -289,25 +298,81 @@ class MainApp:
                 for i in range(len(xs)):
                     out.append(xs[i] + yss[i])
                 processor.csv_writer(out, path)
+            msgWindow("Success", "Successfully exported")
+            top.destroy()
 
         def display(fig, ax, canvas, toolbar):
             id = entry.get()
-            specData = dba.getSpectrumFromID(int(id))
-            if specData is None:
-                msgWindow(
-                    "No spectrum found", "Spectrum of this ID is not found")
+            if id is "":
+                msgWindow("Error", "Please provde ID")
             else:
-                data.xseries = dbapi.textToSeries(specData[1])
-                data.yseries = dbapi.textToSeries(specData[2])
+                specData = dba.getSpectrumFromID(int(id))
+                if specData is None:
+                    msgWindow(
+                        "No spectrum found",
+                        "Spectrum of this ID is not found")
+                else:
+                    data.xseries = dbapi.textToSeries(specData[1])
+                    data.yseries = dbapi.textToSeries(specData[2])
 
-                # use '-o' for dots
-                ax.plot(data.xseries, data.yseries, '-')
-                canvas.show()
-                canvas.get_tk_widget().pack(
-                    side=Tkc.BOTTOM, fill=Tkc.BOTH, expand=1)
+                    # use '-o' for dots
+                    ax.plot(data.xseries, data.yseries, '-')
+                    canvas.show()
+                    canvas.get_tk_widget().pack(
+                        side=Tkc.BOTTOM, fill=Tkc.BOTH, expand=1)
 
-                toolbar.update()
-                canvas._tkcanvas.pack(side=Tkc.TOP, fill=Tkc.BOTH, expand=1)
+                    toolbar.update()
+                    canvas._tkcanvas.pack(
+                        side=Tkc.TOP, fill=Tkc.BOTH, expand=1)
+
+        def showGap(ax, canvas, toolbar):
+            top = tk.Toplevel()
+
+            frame_entry = tk.Frame(top)
+            frame_entry.grid(row=1, columnspan=2)
+
+            label_gapmin = tk.Label(frame_entry, text="Min gap size (V)")
+            label_gapmin.grid(row=1, sticky=tk.E)
+
+            entry_gapmin = tk.Entry(frame_entry)
+            entry_gapmin.insert(0, "0.025")
+            entry_gapmin.grid(row=1, column=1)
+
+            label_gapmax = tk.Label(frame_entry, text="Max gap size (V)")
+            label_gapmax.grid(row=1, column=2, sticky=tk.E)
+
+            entry_gapmax = tk.Entry(frame_entry)
+            entry_gapmax.insert(0, "0.425")
+            entry_gapmax.grid(row=1, column=3)
+
+            button_go = tk.Button(
+                top, text="Calculate",
+                command=lambda: getGap(data.xseries, data.yseries, top))
+            button_go.grid(row=2)
+
+            button_close = tk.Button(top, text="Close", command=top.destroy)
+            button_close.grid(row=2, column=1)
+
+            def getGap(xs, yss, top):
+                gapmin = entry_gapmin.get()
+                gapmax = entry_gapmax.get()
+                if gapmin is "":
+                    msgWindow("Error", "Please proide minimum gap size")
+                elif gapmax is "":
+                    msgWindow("Error", "Please proide maximum gap size")
+                else:
+                    gapSize = mfn.poly_gap(
+                        xs[0:20], yss[0:20], gapmin, gapmax).real
+                    ax.axvline(gapSize)
+                    canvas.show()
+                    canvas.get_tk_widget().pack(
+                        side=Tkc.BOTTOM, fill=Tkc.BOTH, expand=1)
+
+                    toolbar.update()
+                    canvas._tkcanvas.pack(
+                        side=Tkc.TOP, fill=Tkc.BOTH, expand=1)
+                    msgWindow("Done", "Gap size is {}".format(gapSize))
+                    top.destroy()
 
         def clearCanvas(canvas):
             plt.cla()
@@ -363,14 +428,11 @@ class FileDialog(tk.Frame):
             # return open(filename, 'r')
 
     def asksaveasfile(self):
-        "Returns an opened file in write mode."
+        "Returns an open file path."
         return tkFileDialog.asksaveasfile(mode='w', **self.file_opt)
 
     def asksaveasfilename(self):
-        """Returns an opened file in write mode.
-        This time the dialog just returns a filename and the file
-        is opened by your own code.
-        """
+        "Returns a save file path."
 
         # get filename
         filename = tkFileDialog.asksaveasfilename(**self.file_opt)

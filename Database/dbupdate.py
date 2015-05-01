@@ -3,7 +3,7 @@ import os
 import dbapi
 
 __author__ = 'Colin Tan'
-__version__ = 0.8
+__version__ = '0.8'
 
 dir = os.path.dirname(__file__)
 filename = os.path.join(dir, 'database.db')
