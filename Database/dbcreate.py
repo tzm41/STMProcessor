@@ -3,7 +3,7 @@ import os
 from sqlite3 import OperationalError
 
 __author__ = 'Colin Tan'
-__version__ = 1.0
+__version__ = '1.0'
 
 
 def main():

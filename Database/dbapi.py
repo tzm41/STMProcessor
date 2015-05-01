@@ -1,7 +1,7 @@
 # helper methods for DB I/Os
 
 __author__ = 'Colin Tan'
-__version__ = 0.5
+__version__ = '0.5'
 
 
 # convert float series to text
