@@ -63,7 +63,7 @@ def readFile(path_read, csv_delim):
     return xs, yseries
 
 
-def elimStdev(xs, yseries, stdev_multi, boxcar_width):
+def elimStdevBoxcar(xs, yseries, stdev_multi, boxcar_width):
     # calculate standard deviation for each row
     # in other words, for all y values at each x value
     yStdevAtx, yMeanAtx, ysAtx = [], [], []
