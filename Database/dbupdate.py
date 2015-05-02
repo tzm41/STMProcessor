@@ -16,14 +16,14 @@ def insertSpectrum(xseries, yseries, doping):
     getID = "SELECT max(SpecID) FROM SpecData"
     cursor.execute(getID)
     # new ID follows the current ID
-    id = cursor.fetchone()[0] + 1
+    newID = cursor.fetchone()[0] + 1
     xtext = dbapi.seriesToText(xseries)
     ytext = dbapi.seriesToText(yseries)
     insertSpec = """INSERT INTO SpecData
         (SpecID, xdata, ydata, Doping)
         VALUES (?, ?, ?, ?)
     """
-    cursor.execute(insertSpec, (id, xtext, ytext, doping))
+    cursor.execute(insertSpec, (newID, xtext, ytext, doping))
     conn.commit()
     conn.close()
 
@@ -47,13 +47,13 @@ def insertAveSpectrum(xseries, yseries, gapMin, gapMax, numAve, specID=None):
     getID = "SELECT max(AveID) FROM AveSpec"
     cursor.execute(getID)
     # new ID follows the current ID
-    id = cursor.fetchone()[0] + 1
+    newID = cursor.fetchone()[0] + 1
     xtext = dbapi.seriesToText(xseries)
     ytext = dbapi.seriesToText(yseries)
     insertSpec = """INSERT INTO AveSpec
         VALUES (?, ?, ?, ?, ?, ?)
     """
-    cursor.execute(insertSpec, (id, numAve, gapMin, gapMax, xtext, ytext))
+    cursor.execute(insertSpec, (newID, numAve, gapMin, gapMax, xtext, ytext))
     conn.commit()
     conn.close()
 
