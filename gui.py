@@ -24,6 +24,11 @@ def msgWindow(title, text):
     button.pack()
 
 
+def clearCanvas(canvas):
+    plt.cla()
+    canvas.show()
+
+
 # main window
 class MainApp:
     def __init__(self, master, title):
@@ -57,13 +62,18 @@ class MainApp:
         self.button_displayspec.grid(row=4)
 
         self.button_displayspec = tk.Button(
-            frame, text="Display average spectra",
+            frame, text="Calculate average spectra",
             command=self.displayAveFromRange)
         self.button_displayspec.grid(row=5)
 
+        self.button_displayspec = tk.Button(
+            frame, text="Display average spectra of specific boxcar width",
+            command=self.displayAveFromBoxcar)
+        self.button_displayspec.grid(row=6)
+
         self.button_gapfromid = tk.Button(
             frame, text="Get gap size from spectrum", command=self.showGapSize)
-        self.button_gapfromid.grid(row=6)
+        self.button_gapfromid.grid(row=7)
 
     def menu(self, master):
         menubar = tk.Menu(master)
@@ -208,8 +218,8 @@ class MainApp:
         button_close.grid(row=6, columnspan=2)
 
     def createdb(self):
-        result = dbc.main
-        msgWindow("Create database", result)
+        dbc.main
+        msgWindow("Create database", "Finished creating the database")
 
     def displaySpectraNum(self):
         num = dba.displaySpectraNum()
@@ -246,6 +256,70 @@ class MainApp:
 
         button_close = tk.Button(frame, text="Close", command=top.destroy)
         button_close.grid(row=2, column=1)
+
+    def displayAveFromBoxcar(self):
+        class data():
+            xseries = []
+            boxcar = 0
+
+        top = tk.Toplevel()
+        top.title("Display averge spectra")
+        label = tk.Label(top, text="Enter boxcar width")
+        label.pack()
+        entry = tk.Entry(top)
+        entry.pack()
+
+        fig = plt.figure(figsize=(5, 5), dpi=100)
+        ax = fig.add_subplot(111)
+        canvas = FigureCanvasTkAgg(fig, master=top)
+        toolbar = NavigationToolbar2TkAgg(canvas, top)
+
+        frame_button = tk.Frame(top)
+        frame_button.pack()
+
+        button_display = tk.Button(
+            frame_button, text="Display",
+            command=lambda: display(fig, ax, canvas, toolbar))
+        button_display.pack(side=tk.LEFT)
+
+        button_clear = tk.Button(
+            frame_button, text="Clear",
+            command=lambda: clearCanvas(canvas))
+        button_clear.pack(side=tk.LEFT)
+
+        button_close = tk.Button(
+            frame_button, text="Close", command=top.destroy)
+        button_close.pack(side=tk.LEFT)
+
+        def display(fig, ax, canvas, toolbar):
+            data.boxcar = entry.get()
+            if data.boxcar is "":
+                msgWindow("Error", "Please provide boxcar width")
+            else:
+                specData = dba.getAveFromBoxcarWidth(int(data.boxcar))
+                if specData is None:
+                    msgWindow(
+                        "No spectrum found",
+                        "Average spectrum of this boxcar width is not found")
+                else:
+                    data.xseries = dbapi.textToSeries(specData[0][4])
+                    yseries = []
+                    for i in range(len(specData)):
+                        yseries.append(dbapi.textToSeries(specData[i][5]))
+
+                    if len(data.xseries) is not len(yseries[0]):
+                        msgWindow("Error", "x and y have different dimension")
+
+                    # use '-o' for dots
+                    for ys in yseries:
+                        ax.plot(data.xseries, ys, '-')
+                    canvas.show()
+                    canvas.get_tk_widget().pack(
+                        side=Tkc.BOTTOM, fill=Tkc.BOTH, expand=1)
+
+                    toolbar.update()
+                    canvas._tkcanvas.pack(
+                        side=Tkc.TOP, fill=Tkc.BOTH, expand=1)
 
     def displaySpectrumFromID(self):
         class data():
@@ -425,10 +499,6 @@ class MainApp:
                 msgWindow(
                     "Done",
                     "Gap size is {}, saved into database.".format(gapSize))
-
-        def clearCanvas(canvas):
-            plt.cla()
-            canvas.show()
 
     def displayAveFromRange(self):
         class data():
@@ -639,10 +709,6 @@ class MainApp:
                 msgWindow(
                     "Done",
                     "Gap size is {}".format(gapSize))
-
-        def clearCanvas(canvas):
-            plt.cla()
-            canvas.show()
 
 
 # main entrance
