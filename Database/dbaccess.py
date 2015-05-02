@@ -2,7 +2,7 @@ import sqlite3 as db
 import os
 
 __author__ = 'Colin Tan'
-__version__ = 0.8
+__version__ = '1.0'
 
 dir = os.path.dirname(__file__)
 filename = os.path.join(dir, 'database.db')
@@ -53,7 +53,19 @@ def getSpectrumFromDoping(doping):
 
     data = cursor.fetchall()
     conn.close()
-    print(data)
+    return data
+
+
+# get spectra from temperature
+def getSpectrumFromTemp(temp):
+    conn = db.connect(filename)
+    cursor = conn.cursor()
+    sql = "SELECT * FROM SpecData WHERE Temperature = ?"
+    cursor.execute(sql, (temp,))
+
+    data = cursor.fetchall()
+    conn.close()
+    return data
 
 
 # get average spectrum of a spectrum
@@ -68,7 +80,25 @@ def getSpecAvePair(specID):
     cursor.execute(getAveSpec, (aveID))
     data = cursor.fetchall()
     conn.close()
-    print(data)
+    return data
+
+
+# get average spectra of specific boxcar width
+def getAveFromBoxcarWidth(boxcar):
+    conn = db.connect(filename)
+    cursor = conn.cursor()
+    getAve = """SELECT * FROM AveSpec WHERE AveID IN (
+            SELECT DISTINCT AveID FROM SpecAvePair
+            WHERE SpecID IN (
+                SELECT SpecID
+                FROM GapData
+                WHERE BoxcarWidth = ?
+            )
+        )"""
+    cursor.execute(getAve, (boxcar,))
+    data = cursor.fetchall()
+    conn.close()
+    return data
 
 
 # get IDs of spectra associated with gap sizes

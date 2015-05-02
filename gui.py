@@ -11,7 +11,7 @@ from matplotlib.backends.backend_tkagg import NavigationToolbar2TkAgg
 from Processor import mfn
 
 __author__ = 'Colin Tan'
-__version__ = '1.2'
+__version__ = '1.3'
 
 
 # message box displaying title and text with a close button
@@ -435,6 +435,9 @@ class MainApp:
             outdir = None  # output directory path
             xseries = []
             yave = []
+            specidl = 0
+            specidh = 0
+            numAved = 0
 
         path_var = tk.StringVar()
 
@@ -473,6 +476,17 @@ class MainApp:
                 data.outdir = pathname
                 path_var.set(pathname)
 
+        def dbInsert(xs, ys, numAve):
+            if xs is None or ys is None:
+                msgWindow("Error", "Spectrum does not exist")
+            elif min is None or max is None:
+                msgWindow("Error", "Gap range does not exist")
+            else:
+                aveID = dbu.insertAveSpectrum(xs, ys, 0, 0, numAve)
+                for i in range(int(data.specidl), int(data.specidh) + 1):
+                    dbu.insertSpecAvePair(i, aveID)
+                msgWindow("Success", "Average spectra inserted into database")
+
         top = tk.Toplevel()
         top.title("Display averge spectra")
         label = tk.Label(top, text="Enter spectrum ID range")
@@ -509,6 +523,11 @@ class MainApp:
             frame_button, text="Export...", command=export)
         button_export.pack(side=tk.LEFT)
 
+        button_db = tk.Button(
+            frame_button, text="Add to DB",
+            command=lambda: dbInsert(data.xseries, data.yave, data.numAved))
+        button_db.pack(side=tk.LEFT)
+
         button_close = tk.Button(
             frame_button, text="Close", command=top.destroy)
         button_close.pack(side=tk.LEFT)
@@ -527,16 +546,18 @@ class MainApp:
             top.destroy()
 
         def display(fig, ax, canvas, toolbar):
-            specidl = entryl.get()
-            specidh = entryh.get()
-            if specidl is "":
+            data.specidl = entryl.get()
+            data.specidh = entryh.get()
+            if data.specidl is "":
                 msgWindow("Error", "Please provide min ID")
-            elif specidh is "":
+            elif data.specidh is "":
                 msgWindow("Error", "Please provide max ID")
-            elif int(specidl) > int(specidh):
+            elif int(data.specidl) > int(data.specidh):
                 msgWindow("Error", "Lower bound > upper bound")
             else:
-                specData = dba.getSpectrumFromRange(int(specidl), int(specidh))
+                specData = dba.getSpectrumFromRange(
+                    int(data.specidl), int(data.specidh))
+                data.numAved = int(data.specidh) - int(data.specidl) + 1
                 if specData is None:
                     msgWindow(
                         "No spectrum found",
@@ -636,4 +657,3 @@ if __name__ == "__main__":
     root = tk.Tk()
     main()
     root.mainloop()
-    root.destroy()
