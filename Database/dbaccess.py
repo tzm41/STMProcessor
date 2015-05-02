@@ -32,6 +32,18 @@ def getSpectrumFromID(id):
     return data
 
 
+# get spectra from ID range
+def getSpectrumFromRange(idl, idh):
+    conn = db.connect(filename)
+    cursor = conn.cursor()
+    sql = "SELECT * FROM SpecData WHERE SpecID BETWEEN ? AND ?;"
+    cursor.execute(sql, (idl, idh))
+
+    data = cursor.fetchall()
+    conn.close()
+    return data
+
+
 # get spectra from doping
 def getSpectrumFromDoping(doping):
     conn = db.connect(filename)
