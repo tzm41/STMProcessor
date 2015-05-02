@@ -105,59 +105,19 @@ def elimStdevBoxcar(xs, yseries, stdev_multi, boxcar_width):
         return mfn.boxcar(yseries, boxcar_width, exclusions)
 
 
-# argv[0] = absolute read path
-# argv[1] = relative read path
-# argv[1] = boxcar width
-def main(argv):
-    # predefined vars
-    stdev_multi = 2
-    boxcar_width = 5
-    gap_size_min = 0.025
-    gap_size_max = 0.425
-    csv_delim = ';'
-    xstep = 0.025
-
-    path_read = []
-    if len(argv) == 1:
-        absReadPath = argv[0]
-    elif len(argv) == 2:
-        absReadPath = None
-        relReadPath = argv[1]
-    elif len(argv) == 4:
-        absReadPath = argv[0]
-        relReadPath = argv[1]
-        boxcar_width = argv[2]
-        if absReadPath is not None:
-            for path in absReadPath:
-                path_read.append(path)
-        else:
-            for path in relReadPath:
-                path_read.append(gen_path(path, None))
-        csv_delim = argv[3]
-    else:
-        print 'Invalid arguments'
-        sys.exit()
-    direname = os.path.dirname(path_read[0])
-    path_gap = '{}/Out/gap_{}.csv'.format(direname, boxcar_width)
-    path_log = '{}/Out/log_{}.txt'.format(direname, boxcar_width)
-    path_ave = '{}/Out/ave_{}.csv'.format(direname, boxcar_width)
-
-    txt_file = open(path_log, 'wb')
-    txt_file.write('-----summary-----\n')
+# group averaging method
+def groupAverage(xs, boxed, gapmin, gapmax, xstep):
     # count and export gap sizes for boxcared data
     gap_stat = []
     for col in boxed:
         # saving only five decimal places
         # have to use col[::-1] to reverse the list
         gap_stat.append(["{0:.5f}".format(mfn.poly_gap(xs[0:20], col[0:20],
-                        gap_size_min, gap_size_max).real)])
-    csv_writer(gap_stat, path_gap)
-    print 'Gap stat written to file {}, containing {} numbers' \
-        .format(path_gap, len(gap_stat))
+                        gapmin, gapmax).real)])
 
     # export averaged spectra for each gap size group
     average_box, avbox_out = [[0] + xs], []
-    for i in drange(gap_size_min, gap_size_max, xstep):
+    for i in drange(gapmin, gapmax, xstep):
         ysOfGap, this_y_ave = [], [i]
         for j in range(0, len(gap_stat)):
             if(float(gap_stat[j][0]) > i
@@ -168,10 +128,8 @@ def main(argv):
         average_box.append(this_y_ave)
     for i in range(0, len(average_box[1])):
         avbox_out.append([row[i] for row in average_box])
-    csv_writer(avbox_out, path_ave)
-    print 'Average in gap size group' \
-        ' written to file {}, containing {} series' \
-        .format(path_ave, len(avbox_out[0]))
+    return gap_stat, avbox_out
+
 
 # if __name__ == "__main__":
     # format: main([absolute path, relative path, boxcar width, csv delimiter])
