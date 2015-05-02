@@ -1,11 +1,11 @@
 #!/usr/bin/env python
+
 import os.path
 import csv
-import sys
 import mfn
 
 __author__ = 'Colin Tan'
-__version__ = '1.0'
+__version__ = '1.2'
 
 
 # generate file path base on current python script path
@@ -68,7 +68,7 @@ def elimStdevBoxcar(xs, yseries, stdev_multi, boxcar_width):
     # in other words, for all y values at each x value
     yStdevAtx, yMeanAtx, ysAtx = [], [], []
     # get all y values for each x value
-    for i in range(0, len(xs)):
+    for i in range(len(xs)):
         ysAtx.append([col[i] for col in yseries])
     # calculate standard deviations
     for nums in ysAtx:
@@ -77,7 +77,7 @@ def elimStdevBoxcar(xs, yseries, stdev_multi, boxcar_width):
 
     # normalize each spectrum with the average of all spectrum
     ysum = sum(yMeanAtx)
-    for i in xrange(0, len(yseries)):
+    for i in xrange(len(yseries)):
         yseries[i] = mfn.normalize(yseries[i], ysum)
 
     # pick out abnormal ys by comparing with
@@ -90,7 +90,7 @@ def elimStdevBoxcar(xs, yseries, stdev_multi, boxcar_width):
                 exclusions.append(i)
                 break
     # generate filtered y series
-    for num in [x for x in xrange(0, len(yseries)) if x not in exclusions]:
+    for num in [x for x in xrange(len(yseries)) if x not in exclusions]:
         excluded.append(yseries[num])
     # before making yseries = excluded, process using boxcar
     # or sampling to prevent averaging over sparse samples
@@ -119,18 +119,13 @@ def groupAverage(xs, boxed, gapmin, gapmax, xstep):
     average_box, avbox_out = [[0] + xs], []
     for i in drange(gapmin, gapmax, xstep):
         ysOfGap, this_y_ave = [], [i]
-        for j in range(0, len(gap_stat)):
+        for j in range(len(gap_stat)):
             if(float(gap_stat[j][0]) > i
                     and float(gap_stat[j][0]) < i + xstep):
                 ysOfGap.append(boxed[j])
-        for x in range(0, len(xs)):
+        for x in range(len(xs)):
             this_y_ave.append(mfn.mean([col[x] for col in ysOfGap]))
         average_box.append(this_y_ave)
-    for i in range(0, len(average_box[1])):
+    for i in range(len(average_box[1])):
         avbox_out.append([row[i] for row in average_box])
     return gap_stat, avbox_out
-
-
-# if __name__ == "__main__":
-    # format: main([absolute path, relative path, boxcar width, csv delimiter])
-    # main([None, ['../MathTest/upward_new3.csv'], 10, ','])
