@@ -46,7 +46,7 @@ def getSpectrumFromDoping(doping):
 
 # get average spectrum of a spectrum
 def getSpecAvePair(specID):
-    conn = db.current(filename)
+    conn = db.connect(filename)
     cursor = conn.cursor()
     getAveID = "SELECT AveID FROM SpecAvePair WHERE SpecID = ?"
     cursor.execute(getAveID, (specID,))
@@ -57,3 +57,27 @@ def getSpecAvePair(specID):
     data = cursor.fetchall()
     conn.close()
     print(data)
+
+
+# get IDs of spectra associated with gap sizes
+def specWithGap():
+    conn = db.connect(filename)
+    cursor = conn.cursor()
+    sql = "SELECT SpecID FROM GapData"
+    cursor.execute(sql)
+
+    data = cursor.fetchall()
+    conn.close()
+    data = [row[0] for row in data]
+    return data
+
+
+# get gap size of a spectrum
+def getGap(specID):
+    conn = db.connect(filename)
+    cursor = conn.cursor()
+    getGap = "SELECT GapSize FROM GapData WHERE SpecID = ?"
+    cursor.execute(getGap, (specID,))
+    gap = cursor.fetchone()[0]
+    conn.close()
+    return gap

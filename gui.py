@@ -5,17 +5,13 @@ import tkFileDialog
 import Tkconstants as Tkc
 from Database import dbaccess as dba, dbcreate as dbc, dbupdate as dbu, dbapi
 from Processor import processor
-import matplotlib
 import matplotlib.pyplot as plt
-import numpy as np
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.backends.backend_tkagg import NavigationToolbar2TkAgg
 from Processor import mfn
-# from matplotlib.figure import Figure
-# matplotlib.use('TkAgg')
 
 __author__ = 'Colin Tan'
-__version__ = '1.0'
+__version__ = '1.2'
 
 
 # message box displaying title and text with a close button
@@ -59,6 +55,10 @@ class MainApp:
         self.button_displayspec = tk.Button(
             frame, text="Display spectra", command=self.displaySpectrumFromID)
         self.button_displayspec.grid(row=4)
+
+        self.button_gapfromid = tk.Button(
+            frame, text="Get gap size from spectrum", command=self.showGapSize)
+        self.button_gapfromid.grid(row=5)
 
     def menu(self, master):
         menubar = tk.Menu(master)
@@ -106,13 +106,13 @@ class MainApp:
             elif boxcar is "":
                 insert_var.set("Please provide boxcar width")
             elif delim is "":
-                insert_var.set("Please proide CSV delimiter")
+                insert_var.set("Please provide CSV delimiter")
             elif stdev is "":
-                insert_var.set("Please proide standard deviation multiple")
+                insert_var.set("Please provide standard deviation multiple")
             elif gapmin is "":
-                insert_var.set("Please proide minimum gap size")
+                insert_var.set("Please provide minimum gap size")
             elif gapmax is "":
-                insert_var.set("Please proide maximum gap size")
+                insert_var.set("Please provide maximum gap size")
             elif self.sourcefile is None:
                 insert_var.set("No file selected.")
             else:
@@ -208,10 +208,42 @@ class MainApp:
         text = "Number of spectra in the database is {}.".format(str(num))
         msgWindow("Number of spectra", text)
 
+    def showGapSize(self):
+        def getGapSize(specID):
+            gap = dba.getGap(int(specID))
+            msgWindow(
+                "Gap size: spec {}".format(specID),
+                "Gap size is {}".format(gap))
+
+        top = tk.Toplevel()
+
+        label = tk.Label(top, text="Choose from available spectra ID")
+        label.grid(row=0, columnspan=2)
+
+        frame = tk.Frame(top)
+        frame.grid(row=1, columnspan=2)
+
+        idList = dba.specWithGap()
+
+        idList_options = [str(row) for row in idList]
+        id_var = tk.StringVar()
+        id_var.set(idList_options[0])
+
+        option = apply(tk.OptionMenu, (frame, id_var) + tuple(idList_options))
+        option.grid(row=1, columnspan=2)
+
+        button = tk.Button(
+            frame, text="Show", command=lambda: getGapSize(id_var.get()))
+        button.grid(row=2)
+
+        button_close = tk.Button(frame, text="Close", command=top.destroy)
+        button_close.grid(row=2, column=1)
+
     def displaySpectrumFromID(self):
         class data():
             outdir = None  # output directory path
             xseries = yseries = None
+            specid = 0
 
         path_var = tk.StringVar()
 
@@ -277,7 +309,7 @@ class MainApp:
 
         button_gap = tk.Button(
             frame_button, text="Gap",
-            command=lambda: showGap(ax, canvas, toolbar))
+            command=lambda: showGap(ax, canvas, toolbar, data.specid))
         button_gap.pack(side=tk.LEFT)
 
         button_export = tk.Button(
@@ -302,11 +334,11 @@ class MainApp:
             top.destroy()
 
         def display(fig, ax, canvas, toolbar):
-            id = entry.get()
-            if id is "":
+            data.specid = entry.get()
+            if data.specid is "":
                 msgWindow("Error", "Please provde ID")
             else:
-                specData = dba.getSpectrumFromID(int(id))
+                specData = dba.getSpectrumFromID(int(data.specid))
                 if specData is None:
                     msgWindow(
                         "No spectrum found",
@@ -325,7 +357,7 @@ class MainApp:
                     canvas._tkcanvas.pack(
                         side=Tkc.TOP, fill=Tkc.BOTH, expand=1)
 
-        def showGap(ax, canvas, toolbar):
+        def showGap(ax, canvas, toolbar, id):
             top = tk.Toplevel()
 
             frame_entry = tk.Frame(top)
@@ -345,6 +377,13 @@ class MainApp:
             entry_gapmax.insert(0, "0.425")
             entry_gapmax.grid(row=1, column=3)
 
+            label_boxcar = tk.Label(frame_entry, text="Boxcar width")
+            label_boxcar.grid(row=1, column=4, sticky=tk.E)
+
+            entry_boxcar = tk.Entry(frame_entry)
+            entry_boxcar.insert(0, "10")
+            entry_boxcar.grid(row=1, column=5)
+
             button_go = tk.Button(
                 top, text="Calculate",
                 command=lambda: getGap(data.xseries, data.yseries, top))
@@ -354,12 +393,15 @@ class MainApp:
             button_close.grid(row=2, column=1)
 
             def getGap(xs, yss, top):
-                gapmin = entry_gapmin.get()
-                gapmax = entry_gapmax.get()
+                gapmin = float(entry_gapmin.get())
+                gapmax = float(entry_gapmax.get())
+                boxcar = int(entry_boxcar.get())
                 if gapmin is "":
-                    msgWindow("Error", "Please proide minimum gap size")
+                    msgWindow("Error", "Please provide minimum gap size")
                 elif gapmax is "":
-                    msgWindow("Error", "Please proide maximum gap size")
+                    msgWindow("Error", "Please provide maximum gap size")
+                elif boxcar is "":
+                    msgWindow("Error", "Please provide boxcar width")
                 else:
                     gapSize = mfn.poly_gap(
                         xs[0:20], yss[0:20], gapmin, gapmax).real
@@ -371,86 +413,14 @@ class MainApp:
                     toolbar.update()
                     canvas._tkcanvas.pack(
                         side=Tkc.TOP, fill=Tkc.BOTH, expand=1)
-                    msgWindow("Done", "Gap size is {}".format(gapSize))
-                    top.destroy()
+                dbu.insertGap(data.specid, gapSize, boxcar)
+                msgWindow(
+                    "Done",
+                    "Gap size is {}, saved into database.".format(gapSize))
 
         def clearCanvas(canvas):
             plt.cla()
             canvas.show()
-
-
-# depricated
-class FileDialog(tk.Frame):
-    def __init__(self, root):
-        tk.Frame.__init__(self, root)
-
-        # button options
-        button_opt = {'fill': Tkc.BOTH, 'padx': 5, 'pady': 5}
-
-        # define buttons
-        # tk.Button(self, text='Open File',
-        #        command=self.askopenfile).pack(**button_opt)
-        tk.Button(self, text='Open Filename',
-                  command=self.askopenfilename).pack(**button_opt)
-        # tk.Button(self, text='asksaveasfile',
-        #        command=self.asksaveasfile).pack(**button_opt)
-        # tk.Button(self, text='asksaveasfilename',
-        #        command=self.asksaveasfilename).pack(**button_opt)
-        # tk.Button(self, text='askdirectory',
-        #        command=self.askdirectory).pack(**button_opt)
-
-        # define options for opening or saving a file
-        self.file_opt = options = {}
-        options['defaultextension'] = '.*'
-        # options['filetypes'] = [('all files', '.*'), ('csv files', '.csv')]
-        options['initialdir'] = 'User\\'
-        options['initialfile'] = ''
-        options['parent'] = root
-        options['title'] = 'Open file'
-        options['multiple'] = 0
-
-    def askopenfile(self):
-        "Returns an opened file in read mode."
-        return tkFileDialog.askopenfile(mode='r', **self.file_opt)
-
-    def askopenfilename(self):
-        """Returns an opened file in read mode.
-        This time the dialog just returns a filename and the file
-        is opened by your own code.
-        """
-
-        # get filename
-        filename = tkFileDialog.askopenfilename(**self.file_opt)
-
-        # open file on your own
-        if filename:
-            print filename
-            # return open(filename, 'r')
-
-    def asksaveasfile(self):
-        "Returns an open file path."
-        return tkFileDialog.asksaveasfile(mode='w', **self.file_opt)
-
-    def asksaveasfilename(self):
-        "Returns a save file path."
-
-        # get filename
-        filename = tkFileDialog.asksaveasfilename(**self.file_opt)
-
-        # open file on your own
-        if filename:
-            return open(filename, 'w')
-
-    def askdirectory(self):
-        "Returns a selected directory name."
-        return tkFileDialog.askdirectory(**self.dir_opt)
-
-
-# depricated
-def openFileDiag():
-    top = tk.Toplevel()
-    top.title("Open File")
-    FileDialog(top).pack()
 
 
 # main entrance
