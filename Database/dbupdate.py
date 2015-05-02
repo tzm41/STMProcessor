@@ -3,7 +3,7 @@ import os
 import dbapi
 
 __author__ = 'Colin Tan'
-__version__ = '0.8'
+__version__ = '1.0'
 
 dir = os.path.dirname(__file__)
 filename = os.path.join(dir, 'database.db')
@@ -16,7 +16,11 @@ def insertSpectrum(xseries, yseries, doping):
     getID = "SELECT max(SpecID) FROM SpecData"
     cursor.execute(getID)
     # new ID follows the current ID
-    newID = cursor.fetchone()[0] + 1
+    currentID = cursor.fetchone()[0]
+    if currentID is None:
+        newID = 1
+    else:
+        newID = currentID + 1
     xtext = dbapi.seriesToText(xseries)
     ytext = dbapi.seriesToText(yseries)
     insertSpec = """INSERT INTO SpecData
@@ -26,6 +30,7 @@ def insertSpectrum(xseries, yseries, doping):
     cursor.execute(insertSpec, (newID, xtext, ytext, doping))
     conn.commit()
     conn.close()
+    return newID
 
 
 # insert gap data
@@ -47,7 +52,11 @@ def insertAveSpectrum(xseries, yseries, gapMin, gapMax, numAve, specID=None):
     getID = "SELECT max(AveID) FROM AveSpec"
     cursor.execute(getID)
     # new ID follows the current ID
-    newID = cursor.fetchone()[0] + 1
+    currentID = cursor.fetchone()[0]
+    if currentID is None:
+        newID = 1
+    else:
+        newID = currentID + 1
     xtext = dbapi.seriesToText(xseries)
     ytext = dbapi.seriesToText(yseries)
     insertSpec = """INSERT INTO AveSpec
@@ -56,11 +65,12 @@ def insertAveSpectrum(xseries, yseries, gapMin, gapMax, numAve, specID=None):
     cursor.execute(insertSpec, (newID, numAve, gapMin, gapMax, xtext, ytext))
     conn.commit()
     conn.close()
+    return newID
 
 
 # insert a pair of spectrum and its group average spectrum
 def insertSpecAvePair(specID, aveID):
-    conn = db.current(filename)
+    conn = db.connect(filename)
     cursor = conn.cursor()
     sql = "INSERT INTO SpecAvePair VALUES (?, ?)"
     cursor.execute(sql, (specID, aveID))
