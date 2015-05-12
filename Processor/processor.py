@@ -39,8 +39,6 @@ def drange(start, end, step):
 def readFile(path_read, csv_delim):
     xs, yseries = [], []
     for path in path_read:
-        # print 'Data read from file {}.'.format(path)
-
         # parse csv file with custom delimiter
         # 'rU' dealing with lines not ending with delim
         with open(path, 'rU') as csv_file:
@@ -58,12 +56,19 @@ def readFile(path_read, csv_delim):
             if newRow[0] != 0.0:
                 yseries.append(newRow)
 
-        # print 'File contains x series with {} points.'.format(len(xs))
-        # print 'File contains {} y series.'.format(len(yseries))
     return xs, yseries
 
 
-def elimStdevBoxcar(xs, yseries, stdev_multi, boxcar_width):
+def elimStdev(xs, yseries, stdev_multi):
+    """Eliminate outliers in a group of y-series
+    Args:
+        xs ([float]): the x-series data
+        yseries ([[float]]): potentially multiple y-series data
+        stdev_multi (int): multiple of standard deviation out of which
+            spectra will be eliminated
+    Returns:
+        Cleaned up y-series
+    """
     # calculate standard deviation for each row
     # in other words, for all y values at each x value
     yStdevAtx, yMeanAtx, ysAtx = [], [], []
@@ -92,12 +97,10 @@ def elimStdevBoxcar(xs, yseries, stdev_multi, boxcar_width):
     # generate filtered y series
     for num in [x for x in xrange(len(yseries)) if x not in exclusions]:
         excluded.append(yseries[num])
-    # before making yseries = excluded, process using boxcar
-    # or sampling to prevent averaging over sparse samples
+    return excluded
 
-    print 'For defined {} * sigma threshold, {} y series are excluded.' \
-        .format(stdev_multi, len(exclusions))
 
+def boxcar(yseries, boxcar_width, exclusions=None):
     # boxcar before gap determination
     if boxcar_width == 0:
         return yseries

@@ -78,7 +78,7 @@ class MainApp:
     def menu(self, master):
         menubar = tk.Menu(master)
         filemenu = tk.Menu(menubar, tearoff=0)
-        # filemenu.add_command(label="Open...", command=self.askopenfilename)
+        filemenu.add_command(label="Open...", command=self.openFile)
         filemenu.add_command(label="Quit", command=root.quit)
         filemenu.add_separator()
         menubar.add_cascade(label="STMPLab", menu=filemenu)
