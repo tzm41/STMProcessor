@@ -67,7 +67,7 @@ def elimStdev(xs, yseries, stdev_multi):
         stdev_multi (int): multiple of standard deviation out of which
             spectra will be eliminated
     Returns:
-        Cleaned up y-series
+        Excluded indexes, and cleaned up y-series
     """
     # calculate standard deviation for each row
     # in other words, for all y values at each x value
@@ -97,7 +97,7 @@ def elimStdev(xs, yseries, stdev_multi):
     # generate filtered y series
     for num in [x for x in xrange(len(yseries)) if x not in exclusions]:
         excluded.append(yseries[num])
-    return excluded
+    return exclusions, excluded
 
 
 def boxcar(yseries, boxcar_width, exclusions=None):

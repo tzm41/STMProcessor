@@ -61,19 +61,24 @@ class MainApp:
             frame, text="Display spectra", command=self.displaySpectrumFromID)
         self.button_displayspec.grid(row=4)
 
-        self.button_displayspec = tk.Button(
+        self.button_rmvoutlier = tk.Button(
+            frame, text="Remove outliers",
+            command=self.rmvOutlier)
+        self.button_rmvoutlier.grid(row=5)
+
+        self.button_avespec = tk.Button(
             frame, text="Calculate average spectra",
             command=self.displayAveFromRange)
-        self.button_displayspec.grid(row=5)
+        self.button_avespec.grid(row=6)
 
-        self.button_displayspec = tk.Button(
+        self.button_avespecfrombox = tk.Button(
             frame, text="Display average spectra of specific boxcar width",
             command=self.displayAveFromBoxcar)
-        self.button_displayspec.grid(row=6)
+        self.button_avespecfrombox.grid(row=7)
 
         self.button_gapfromid = tk.Button(
             frame, text="Get gap size from spectrum", command=self.showGapSize)
-        self.button_gapfromid.grid(row=7)
+        self.button_gapfromid.grid(row=8)
 
     def menu(self, master):
         menubar = tk.Menu(master)
@@ -136,6 +141,8 @@ class MainApp:
                 gapmin = float(gapmin)
                 gapmax = float(gapmax)
                 xs, yss = processor.readFile(self.sourcefile, delim)
+                # TODO: add exclusion feature
+                exclusions, excluded = processor.elimStdev(xs, yss, 2)
                 count = 0
                 for ys in yss:
                     count += 1
@@ -709,6 +716,105 @@ class MainApp:
                 msgWindow(
                     "Done",
                     "Gap size is {}".format(gapSize))
+
+    def rmvOutlier(self):
+        class data():
+            outdir = None  # output directory path
+            xseries = []
+            yave = []
+            specidl = 0
+            specidh = 0
+            numAved = 0
+
+        def dbInsert(xs, ys, numAve):
+            if xs is None or ys is None:
+                msgWindow("Error", "Spectrum does not exist")
+            elif min is None or max is None:
+                msgWindow("Error", "Gap range does not exist")
+            else:
+                aveID = dbu.insertAveSpectrum(xs, ys, 0, 0, numAve)
+                for i in range(int(data.specidl), int(data.specidh) + 1):
+                    dbu.insertSpecAvePair(i, aveID)
+                msgWindow("Success", "Average spectra inserted into database")
+
+        top = tk.Toplevel()
+        top.title("Display averge spectra")
+        label = tk.Label(top, text="Enter spectrum ID range")
+        label.pack()
+        entryl = tk.Entry(top)
+        entryl.pack()
+        entryh = tk.Entry(top)
+        entryh.pack()
+        label_stdev = tk.Label(top, text="Enter standard deviation multiple")
+        label_stdev.pack()
+        entry = tk.Entry(top)
+        entry.insert(0, "2")
+        entry.pack()
+
+        fig = plt.figure(figsize=(5, 5), dpi=100)
+        ax = fig.add_subplot(111)
+        canvas = FigureCanvasTkAgg(fig, master=top)
+        toolbar = NavigationToolbar2TkAgg(canvas, top)
+
+        frame_button = tk.Frame(top)
+        frame_button.pack()
+
+        button_display = tk.Button(
+            frame_button, text="Display",
+            command=lambda: display(fig, ax, canvas, toolbar))
+        button_display.pack(side=tk.LEFT)
+
+        button_clear = tk.Button(
+            frame_button, text="Clear",
+            command=lambda: clearCanvas(canvas))
+        button_clear.pack(side=tk.LEFT)
+
+        button_db = tk.Button(
+            frame_button, text="Add to DB",
+            command=lambda: dbInsert(data.xseries, data.yave, data.numAved))
+        button_db.pack(side=tk.LEFT)
+
+        button_close = tk.Button(
+            frame_button, text="Close", command=top.destroy)
+        button_close.pack(side=tk.LEFT)
+
+        def display(fig, ax, canvas, toolbar):
+            data.specidl = entryl.get()
+            data.specidh = entryh.get()
+            if data.specidl is "":
+                msgWindow("Error", "Please provide min ID")
+            elif data.specidh is "":
+                msgWindow("Error", "Please provide max ID")
+            elif int(data.specidl) > int(data.specidh):
+                msgWindow("Error", "Lower bound > upper bound")
+            else:
+                specData = dba.getSpectrumFromRange(
+                    int(data.specidl), int(data.specidh))
+                data.numAved = int(data.specidh) - int(data.specidl) + 1
+                if specData is None:
+                    msgWindow(
+                        "No spectrum found",
+                        "Spectrum of this ID is not found")
+                else:
+                    data.xseries = dbapi.textToSeries(specData[0][1])
+                    yseries, data.yave = [], []
+                    for i in range(len(specData)):
+                        yseries.append(dbapi.textToSeries(specData[i][2]))
+                    for x in range(len(data.xseries)):
+                        data.yave.append(mfn.mean([col[x] for col in yseries]))
+
+                    if len(data.xseries) is not len(data.yave):
+                        msgWindow("Error", "x and y have different dimension")
+
+                    # use '-o' for dots
+                    ax.plot(data.xseries, data.yave, '-')
+                    canvas.show()
+                    canvas.get_tk_widget().pack(
+                        side=Tkc.BOTTOM, fill=Tkc.BOTH, expand=1)
+
+                    toolbar.update()
+                    canvas._tkcanvas.pack(
+                        side=Tkc.TOP, fill=Tkc.BOTH, expand=1)
 
 
 # main entrance
