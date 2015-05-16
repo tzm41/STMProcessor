@@ -155,6 +155,48 @@ class MainApp:
         def showsourcefilename():
             print(self.sourcefile)
 
+        # plain old process function
+        def POPF():
+            doping = entry_doping.get()
+            boxcar = entry_boxcar.get()
+            delim = entry_delim.get()
+            stdev = entry_stedv.get()
+            gapmin = entry_gapmin.get()
+            gapmax = entry_gapmax.get()
+            xstep = entry_xstep.get()
+            if doping is "":
+                insert_var.set("Please provide doping")
+            elif boxcar is "":
+                insert_var.set("Please provide boxcar width")
+            elif delim is "":
+                insert_var.set("Please provide CSV delimiter")
+            elif stdev is "":
+                insert_var.set("Please provide standard deviation multiple")
+            elif gapmin is "":
+                insert_var.set("Please provide minimum gap size")
+            elif gapmax is "":
+                insert_var.set("Please provide maximum gap size")
+            elif xstep is "":
+                insert_var.set("Please provide x step size")
+            elif self.sourcefile is None:
+                insert_var.set("No file selected.")
+            else:
+                boxcar = int(boxcar)
+                stdev = int(stdev)
+                gapmin = float(gapmin)
+                gapmax = float(gapmax)
+                xstep = float(xstep)
+                xs, yss = processor.readFile(self.sourcefile, delim)
+                exclusions, excluded = processor.elimStdev(xs, yss, 2)
+                boxcared = processor.boxcar(yss, boxcar, exclusions)
+                gap_stat, average_box = processor.groupAverage(
+                    xs, boxcared, gapmin, gapmax, xstep)
+                top = tk.Toplevel()
+                top.title("Choose output path")
+                label_path = tk.Label(top, text="Select path")
+                label_path.grid(row=0)
+                processor.csv_writer
+
         top = tk.Toplevel()
 
         frame_entry = tk.Frame(top)
@@ -202,6 +244,13 @@ class MainApp:
         entry_gapmax.insert(0, "0.425")
         entry_gapmax.grid(row=3, column=3)
 
+        label_xstep = tk.Label(frame_entry, text="x-step (V)")
+        label_xstep.grid(row=4, column=2, sticky=tk.E)
+
+        entry_xstep = tk.Entry(frame_entry)
+        entry_xstep.insert(0, "0.025")
+        entry_xstep.grid(row=4, column=3)
+
         button_openfile = tk.Button(
             top, text="Open...", command=askopenfilename)
         button_openfile.grid(row=2)
@@ -219,10 +268,15 @@ class MainApp:
         insert_var = tk.StringVar()
         label_insert = tk.Label(
             top, textvariable=insert_var, justify=tk.CENTER)
-        label_insert.grid(row=5, column=1)
+        label_insert.grid(row=3, column=1)
+
+        # plain old process function
+        button_POPF = tk.Button(
+            top, text="Plain old process function", command=POPF)
+        button_POPF.grid(row=4, columnspan=2)
 
         button_close = tk.Button(top, text="Close", command=top.destroy)
-        button_close.grid(row=6, columnspan=2)
+        button_close.grid(row=5, columnspan=2)
 
     def createdb(self):
         dbc.main
