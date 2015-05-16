@@ -3,5 +3,7 @@
 
 *.sublime-project
 
+.idea
+
 # data files
 Data/
