@@ -170,8 +170,7 @@ def main(argv):
     for i in drange(gap_size_min, gap_size_max, xstep):
         ysOfGap, this_y_ave = [], [i]
         for j in range(0, len(gap_stat)):
-            if(float(gap_stat[j][0]) > i
-                    and float(gap_stat[j][0]) < i + xstep):
+            if i < float(gap_stat[j][0]) < i + xstep:
                 ysOfGap.append(boxed[j])
         for x in range(0, len(xs)):
             this_y_ave.append(mfn.mean([col[x] for col in ysOfGap]))

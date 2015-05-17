@@ -40,7 +40,7 @@ def readFile(path_read, csv_delim):
     xs, yseries = [], []
     for path in path_read:
         # parse csv file with custom delimiter
-        # 'rU' dealing with lines not ending with delim
+        # 'rU' dealing with lines not ending with delimiter
         with open(path, 'rU') as csv_file:
             filecontent = csv.reader(csv_file, delimiter=csv_delim)
             openedFile = [row for row in filecontent]
@@ -52,9 +52,9 @@ def readFile(path_read, csv_delim):
         # column starting at index 1
         for i in range(1, len(openedFile[0]), 2):
             # remove zero spectra
-            newRow = [float(row[i]) for row in openedFile]
-            if newRow[0] != 0.0:
-                yseries.append(newRow)
+            new_row = [float(row[i]) for row in openedFile]
+            if new_row[0] != 0.0:
+                yseries.append(new_row)
 
     return xs, yseries
 

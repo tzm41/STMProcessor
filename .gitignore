@@ -7,3 +7,6 @@
 
 # data files
 Data/
+
+# binary files
+*.pyc
