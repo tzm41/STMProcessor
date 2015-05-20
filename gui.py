@@ -51,7 +51,7 @@ class MainApp:
 
         self.create_button = tk.Button(
             frame, text="Create new/erase existing database",
-            command=self.createdb)
+            command=self.create_db)
         self.create_button.grid(row=1)
 
         self.num_button = tk.Button(
@@ -63,17 +63,17 @@ class MainApp:
         self.button_open.grid(row=3)
 
         self.button_display_spec = tk.Button(
-            frame, text="Display spectra", command=self.displaySpectrumFromID)
+            frame, text="Display spectra", command=self.display_spectrum_from_id)
         self.button_display_spec.grid(row=4)
 
         self.button_rm_outlier = tk.Button(
             frame, text="Remove outliers",
-            command=self.rmvOutlier)
+            command=self.rmv_outlier)
         self.button_rm_outlier.grid(row=5)
 
         self.button_ave_spec = tk.Button(
             frame, text="Calculate average spectra",
-            command=self.displayAveFromRange)
+            command=self.display_ave_from_range)
         self.button_ave_spec.grid(row=6)
 
         self.button_ave_spec_from_box = tk.Button(
@@ -101,7 +101,6 @@ class MainApp:
 
             file_opt = options = {}
             options['defaultextension'] = '.*'
-            # options['filetypes'] = [('csv files', '.csv')]
             options['initialdir'] = 'User\\'
             options['initialfile'] = ''
             options['parent'] = root
@@ -119,33 +118,33 @@ class MainApp:
                     filepath_var.set(
                         "Multiple files, including {}".format(filename[0]))
 
-        def insert_spectrum(top):
+        def insert_spectrum(top_arg):
             doping = entry_doping.get()
             boxcar = entry_boxcar.get()
-            delim = entry_delim.get()
-            stdev = entry_stedv.get()
-            gapmin = entry_gapmin.get()
-            gapmax = entry_gapmax.get()
+            delimiter = entry_delim.get()
+            std_dev = entry_stdev.get()
+            gap_min = entry_gapmin.get()
+            gap_max = entry_gapmax.get()
             if doping is "":
                 insert_var.set("Please provide doping")
             elif boxcar is "":
                 insert_var.set("Please provide boxcar width")
-            elif delim is "":
+            elif delimiter is "":
                 insert_var.set("Please provide CSV delimiter")
-            elif stdev is "":
+            elif std_dev is "":
                 insert_var.set("Please provide standard deviation multiple")
-            elif gapmin is "":
+            elif gap_min is "":
                 insert_var.set("Please provide minimum gap size")
-            elif gapmax is "":
+            elif gap_max is "":
                 insert_var.set("Please provide maximum gap size")
             elif self.sourcefile is None:
                 insert_var.set("No file selected.")
             else:
                 boxcar = int(boxcar)
-                stdev = int(stdev)
-                gapmin = float(gapmin)
-                gapmax = float(gapmax)
-                xs, yss = processor.readFile(self.sourcefile, delim)
+                std_dev = int(std_dev)
+                gap_min = float(gap_min)
+                gap_max = float(gap_max)
+                xs, yss = processor.readFile(self.sourcefile, delimiter)
                 # TODO: add exclusion feature
                 exclusions, excluded = processor.elimStdev(xs, yss, 2)
                 count = 0
@@ -154,22 +153,18 @@ class MainApp:
                     dbu.insertSpectrum(xs, ys, doping)
                 msg_window(
                     "Done", "Successfully inserted {} spectra".format(count))
-                top.destroy()
-
-        # internal testing
-        def showsourcefilename():
-            print(self.sourcefile)
+                top_arg.destroy()
 
         # plain old process function
-        def POPF():
-            class Data():
+        def process():
+            class Data:
                 out_dir = None
                 gap_stat, average_box = [], []
 
             path_var = tk.StringVar()
             status_var.set("Processing... Please wait.")
 
-            def askpath():
+            def ask_path():
                 """Return the selected directory name"""
 
                 file_opt = options = {}
@@ -184,11 +179,11 @@ class MainApp:
                     Data.out_dir = pathname
                     path_var.set(pathname)
 
-            def process():
-                exclusions, excluded = processor.elimStdev(xs, yss, stdev)
-                boxcared = processor.boxcar(yss, boxcar, exclusions)
+            def processing():
+                exclusions, excluded = processor.elimStdev(xs, yss, std_dev)
+                boxcar_result = processor.boxcar(yss, boxcar, exclusions)
                 Data.gap_stat, Data.average_box = processor.groupAverage(
-                    xs, boxcared, gapmin, gapmax, xstep)
+                    xs, boxcar_result, gap_min, gap_max, x_step)
 
             def output():
                 processor.csv_writer(
@@ -200,44 +195,44 @@ class MainApp:
                 top_top.destroy()
 
             boxcar = entry_boxcar.get()
-            delim = entry_delim.get()
-            stdev = entry_stedv.get()
-            gapmin = entry_gapmin.get()
-            gapmax = entry_gapmax.get()
-            xstep = entry_xstep.get()
+            delimiter = entry_delim.get()
+            std_dev = entry_stdev.get()
+            gap_min = entry_gapmin.get()
+            gap_max = entry_gapmax.get()
+            x_step = entry_xstep.get()
             if boxcar is "":
                 status_var.set("Please provide boxcar width")
-            elif delim is "":
+            elif delimiter is "":
                 status_var.set("Please provide CSV delimiter")
-            elif stdev is "":
+            elif std_dev is "":
                 status_var.set("Please provide standard deviation multiple")
-            elif gapmin is "":
+            elif gap_min is "":
                 status_var.set("Please provide minimum gap size")
-            elif gapmax is "":
+            elif gap_max is "":
                 status_var.set("Please provide maximum gap size")
-            elif xstep is "":
+            elif x_step is "":
                 status_var.set("Please provide x step size")
             elif self.sourcefile is None:
                 status_var.set("No file selected.")
             else:
                 boxcar = int(boxcar)
-                stdev = int(stdev)
-                gapmin = float(gapmin)
-                gapmax = float(gapmax)
-                xstep = float(xstep)
+                std_dev = int(std_dev)
+                gap_min = float(gap_min)
+                gap_max = float(gap_max)
+                x_step = float(x_step)
                 try:
-                    xs, yss = processor.readFile(self.sourcefile, delim)
+                    xs, yss = processor.readFile(self.sourcefile, delimiter)
                 except ValueError:
-                    if delim is ",":
+                    if delimiter is ",":
                         status_var.set(
                             "Error, wrong csv delimiter. Try semicolon.")
-                    elif delim is ";":
+                    elif delimiter is ";":
                         status_var.set(
                             "Error, wrong csv delimiter. Try comma.")
                     else:
                         status_var.set("Error, wrong csv delimiter.")
                 else:
-                    thread = Thread(target=process)
+                    thread = Thread(target=processing)
                     thread.start()
                     thread.join()
 
@@ -249,7 +244,7 @@ class MainApp:
                     top_top.title("Choose output path")
 
                     button_path = tk.Button(
-                        top_top, text="Select path", command=askpath)
+                        top_top, text="Select path", command=ask_path)
                     button_path.grid(row=1)
 
                     path_var = tk.StringVar()
@@ -292,9 +287,9 @@ class MainApp:
         label_stedv = tk.Label(frame_entry, text="Stdev multiple")
         label_stedv.grid(row=2, column=2, sticky=tk.E)
 
-        entry_stedv = tk.Entry(frame_entry)
-        entry_stedv.insert(0, "2")
-        entry_stedv.grid(row=2, column=3)
+        entry_stdev = tk.Entry(frame_entry)
+        entry_stdev.insert(0, "2")
+        entry_stdev.grid(row=2, column=3)
 
         label_gapmin = tk.Label(frame_entry, text="Min gap size (V)")
         label_gapmin.grid(row=3, sticky=tk.E)
@@ -327,9 +322,9 @@ class MainApp:
             top, textvariable=filepath_var, justify=tk.CENTER)
         label_file.grid(row=2, column=1)
 
-        button_insertspec = tk.Button(
+        button_insert_spec = tk.Button(
             top, text="Insert spectra", command=lambda: insert_spectrum(top))
-        button_insertspec.grid(row=3)
+        button_insert_spec.grid(row=3)
 
         insert_var = tk.StringVar()
         label_insert = tk.Label(
@@ -337,21 +332,21 @@ class MainApp:
         label_insert.grid(row=3, column=1)
 
         # plain old process function
-        button_POPF = tk.Button(
-            top, text="Plain old process function", command=POPF)
-        button_POPF.grid(row=4)
+        button_process = tk.Button(
+            top, text="Plain old process function", command=process)
+        button_process.grid(row=4)
 
         status_var = tk.StringVar()
 
-        label_POPF = tk.Label(top, textvariable=status_var, justify=tk.CENTER)
-        label_POPF.grid(row=4, column=1)
+        label_process = tk.Label(top, textvariable=status_var, justify=tk.CENTER)
+        label_process.grid(row=4, column=1)
 
         button_close = tk.Button(top, text="Close", command=top.destroy)
         button_close.grid(row=5, columnspan=2)
 
     @staticmethod
-    def createdb():
-        dbc.main
+    def create_db():
+        dbc.main()
         logging.debug("Finished creating database")
         msg_window("Create database", "Finished creating the database")
 
@@ -363,10 +358,10 @@ class MainApp:
 
     @staticmethod
     def show_gap_size():
-        def getGapSize(specID):
-            gap = dba.getGap(int(specID))
+        def get_gap_size(spec_id):
+            gap = dba.getGap(int(spec_id))
             msg_window(
-                "Gap size: spec {}".format(specID),
+                "Gap size: spec {}".format(spec_id),
                 "Gap size is {}".format(gap))
 
         top = tk.Toplevel()
@@ -387,7 +382,7 @@ class MainApp:
         option.grid(row=1, columnspan=2)
 
         button = tk.Button(
-            frame, text="Show", command=lambda: getGapSize(id_var.get()))
+            frame, text="Show", command=lambda: get_gap_size(id_var.get()))
         button.grid(row=2)
 
         button_close = tk.Button(frame, text="Close", command=top.destroy)
@@ -395,12 +390,43 @@ class MainApp:
 
     @staticmethod
     def display_ave_from_boxcar():
-        class Data():
-            xseries = []
+        class Data:
+            x_series = []
             boxcar = 0
 
+        def display():
+            Data.boxcar = entry.get()
+            if Data.boxcar is "":
+                msg_window("Error", "Please provide boxcar width")
+            else:
+                spec_data = dba.getAveFromBoxcarWidth(int(Data.boxcar))
+                if spec_data is None:
+                    msg_window(
+                        "No spectrum found",
+                        "Average spectrum of this boxcar width is not found")
+                else:
+                    Data.x_series = dbapi.textToSeries(spec_data[0][4])
+                    y_series = []
+                    for i in range(len(spec_data)):
+                        y_series.append(dbapi.textToSeries(spec_data[i][5]))
+
+                    if len(Data.x_series) is not len(y_series[0]):
+                        msg_window("Error", "x and y have different dimension")
+
+                    # use '-o' for dots
+                    for ys in y_series:
+                        ax.plot(Data.x_series, ys, '-')
+                    canvas.show()
+                    canvas.get_tk_widget().pack(
+                        side=tkc.BOTTOM, fill=tkc.BOTH, expand=1)
+
+                    toolbar.update()
+
+                    canvas._tkcanvas.pack(
+                        side=tkc.TOP, fill=tkc.BOTH, expand=1)
+
         top = tk.Toplevel()
-        top.title("Display averge spectra")
+        top.title("Display average spectra")
         label = tk.Label(top, text="Enter boxcar width")
         label.pack()
         entry = tk.Entry(top)
@@ -414,9 +440,7 @@ class MainApp:
         frame_button = tk.Frame(top)
         frame_button.pack()
 
-        button_display = tk.Button(
-            frame_button, text="Display",
-            command=lambda: display(fig, ax, canvas, toolbar))
+        button_display = tk.Button(frame_button, text="Display", command=display)
         button_display.pack(side=tk.LEFT)
 
         button_clear = tk.Button(
@@ -428,62 +452,34 @@ class MainApp:
             frame_button, text="Close", command=top.destroy)
         button_close.pack(side=tk.LEFT)
 
-        def display(fig, ax, canvas, toolbar):
-            Data.boxcar = entry.get()
-            if Data.boxcar is "":
-                msg_window("Error", "Please provide boxcar width")
-            else:
-                specData = dba.getAveFromBoxcarWidth(int(Data.boxcar))
-                if specData is None:
-                    msg_window(
-                        "No spectrum found",
-                        "Average spectrum of this boxcar width is not found")
-                else:
-                    Data.xseries = dbapi.textToSeries(specData[0][4])
-                    yseries = []
-                    for i in range(len(specData)):
-                        yseries.append(dbapi.textToSeries(specData[i][5]))
-
-                    if len(Data.xseries) is not len(yseries[0]):
-                        msg_window("Error", "x and y have different dimension")
-
-                    # use '-o' for dots
-                    for ys in yseries:
-                        ax.plot(Data.xseries, ys, '-')
-                    canvas.show()
-                    canvas.get_tk_widget().pack(
-                        side=tkc.BOTTOM, fill=tkc.BOTH, expand=1)
-
-                    toolbar.update()
-                    canvas._tkcanvas.pack(
-                        side=tkc.TOP, fill=tkc.BOTH, expand=1)
-
-    def displaySpectrumFromID(self):
-        class data():
-            outdir = None  # output directory path
-            xseries = yseries = None
-            specid = 0
+    @staticmethod
+    def display_spectrum_from_id():
+        class Data:
+            out_dir = None  # output directory path
+            x_series = y_series = None
+            spec_id = 0
 
         path_var = tk.StringVar()
 
         def export():
-            top = tk.Toplevel()
-            top.title("Export spectrum")
+            top_top = tk.Toplevel()
+            top_top.title("Export spectrum")
             button_dir = tk.Button(
-                top, text="Choose path", command=ask_path)
+                top_top, text="Choose path", command=ask_path)
             button_dir.pack()
             path_var.set("Please select path")
             label_path = tk.Label(
-                top, textvariable=path_var, justify=tk.CENTER)
+                top_top, textvariable=path_var, justify=tk.CENTER)
             label_path.pack()
             button_exc = tk.Button(
-                top, text="Export",
-                command=lambda: exportSpec(
-                    data.xseries, data.yseries, data.outdir, top))
+                top_top, text="Export",
+                command=lambda: export_spec(
+                    Data.x_series, Data.y_series, Data.out_dir, top_top))
             button_exc.pack()
-            button_close = tk.Button(
-                top, text="Close", command=top.destroy)
-            button_close.pack()
+
+            button_close_top = tk.Button(
+                top_top, text="Close", command=top_top.destroy)
+            button_close_top.pack()
 
         # open directory window
         def ask_path():
@@ -494,80 +490,29 @@ class MainApp:
             options['parent'] = root
             options['title'] = 'Choose directory'
 
-            # get pathname
+            # get path name
             pathname = tk.filedialog.asksaveasfilename(**file_opt)
 
             if pathname:
-                data.outdir = pathname
+                Data.out_dir = pathname
                 path_var.set(pathname)
 
-        top = tk.Toplevel()
-        top.title("Display spectra")
-        label = tk.Label(top, text="Enter spectrum ID")
-        label.pack()
-        entry = tk.Entry(top)
-        entry.pack()
-
-        fig = plt.figure(figsize=(5, 5), dpi=100)
-        ax = fig.add_subplot(111)
-        canvas = FigureCanvasTkAgg(fig, master=top)
-        toolbar = NavigationToolbar2TkAgg(canvas, top)
-
-        frame_button = tk.Frame(top)
-        frame_button.pack()
-
-        button_display = tk.Button(
-            frame_button, text="Display",
-            command=lambda: display(fig, ax, canvas, toolbar))
-        button_display.pack(side=tk.LEFT)
-
-        button_clear = tk.Button(
-            frame_button, text="Clear",
-            command=lambda: clear_canvas(canvas))
-        button_clear.pack(side=tk.LEFT)
-
-        button_gap = tk.Button(
-            frame_button, text="Gap",
-            command=lambda: showGap(ax, canvas, toolbar, data.specid))
-        button_gap.pack(side=tk.LEFT)
-
-        button_export = tk.Button(
-            frame_button, text="Export...", command=export)
-        button_export.pack(side=tk.LEFT)
-
-        button_close = tk.Button(
-            frame_button, text="Close", command=top.destroy)
-        button_close.pack(side=tk.LEFT)
-
-        def exportSpec(xs, yss, path, top):
-            if xs is None or yss is None or path is None:
-                msg_window("Error", "Something is missing")
-            else:
-                xs = mfn.transpose1d(xs)
-                yss = mfn.transpose1d(yss)
-                out = []
-                for i in range(len(xs)):
-                    out.append(xs[i] + yss[i])
-                processor.csv_writer(out, path)
-            msg_window("Success", "Successfully exported")
-            top.destroy()
-
-        def display(fig, ax, canvas, toolbar):
-            data.specid = entry.get()
-            if data.specid is "":
+        def display():
+            Data.spec_id = entry.get()
+            if Data.spec_id is "":
                 msg_window("Error", "Please provde ID")
             else:
-                specData = dba.getSpectrumFromID(int(data.specid))
+                specData = dba.getSpectrumFromID(int(Data.spec_id))
                 if specData is None:
                     msg_window(
                         "No spectrum found",
                         "Spectrum of this ID is not found")
                 else:
-                    data.xseries = dbapi.textToSeries(specData[1])
-                    data.yseries = dbapi.textToSeries(specData[2])
+                    Data.x_series = dbapi.textToSeries(specData[1])
+                    Data.y_series = dbapi.textToSeries(specData[2])
 
                     # use '-o' for dots
-                    ax.plot(data.xseries, data.yseries, '-')
+                    ax.plot(Data.x_series, Data.y_series, '-')
                     canvas.show()
                     canvas.get_tk_widget().pack(
                         side=tkc.BOTTOM, fill=tkc.BOTH, expand=1)
@@ -576,10 +521,10 @@ class MainApp:
                     canvas._tkcanvas.pack(
                         side=tkc.TOP, fill=tkc.BOTH, expand=1)
 
-        def showGap(ax, canvas, toolbar, id):
-            top = tk.Toplevel()
+        def show_gap():
+            top_top = tk.Toplevel()
 
-            frame_entry = tk.Frame(top)
+            frame_entry = tk.Frame(top_top)
             frame_entry.grid(row=1, columnspan=2)
 
             label_gapmin = tk.Label(frame_entry, text="Min gap size (V)")
@@ -604,14 +549,14 @@ class MainApp:
             entry_boxcar.grid(row=1, column=5)
 
             button_go = tk.Button(
-                top, text="Calculate",
-                command=lambda: getGap(data.xseries, data.yseries, top))
+                top_top, text="Calculate",
+                command=lambda: getGap(Data.x_series, Data.y_series))
             button_go.grid(row=2)
 
-            button_close = tk.Button(top, text="Close", command=top.destroy)
-            button_close.grid(row=2, column=1)
+            button_close_top = tk.Button(top_top, text="Close", command=top_top.destroy)
+            button_close_top.grid(row=2, column=1)
 
-            def getGap(xs, yss, top):
+            def getGap(xs, yss):
                 gapmin = float(entry_gapmin.get())
                 gapmax = float(entry_gapmax.get())
                 boxcar = int(entry_boxcar.get())
@@ -632,55 +577,106 @@ class MainApp:
                     toolbar.update()
                     canvas._tkcanvas.pack(
                         side=tkc.TOP, fill=tkc.BOTH, expand=1)
-                dbu.insertGap(data.specid, gapSize, boxcar)
+                dbu.insertGap(Data.spec_id, gapSize, boxcar)
                 msg_window(
                     "Done",
                     "Gap size is {}, saved into database.".format(gapSize))
 
-    def displayAveFromRange(self):
-        class data():
-            outdir = None  # output directory path
-            xseries = []
-            yave = []
+        top = tk.Toplevel()
+        top.title("Display spectra")
+        label = tk.Label(top, text="Enter spectrum ID")
+        label.pack()
+        entry = tk.Entry(top)
+        entry.pack()
+
+        fig = plt.figure(figsize=(5, 5), dpi=100)
+        ax = fig.add_subplot(111)
+        canvas = FigureCanvasTkAgg(fig, master=top)
+        toolbar = NavigationToolbar2TkAgg(canvas, top)
+           
+        frame_button = tk.Frame(top)
+        frame_button.pack()
+
+        button_display = tk.Button(
+            frame_button, text="Display", command=display)
+        button_display.pack(side=tk.LEFT)
+
+        button_clear = tk.Button(
+            frame_button, text="Clear",
+            command=lambda: clear_canvas(canvas))
+        button_clear.pack(side=tk.LEFT)
+
+        button_gap = tk.Button(
+            frame_button, text="Gap", command=show_gap)
+        button_gap.pack(side=tk.LEFT)
+
+        button_export = tk.Button(
+            frame_button, text="Export...", command=export)
+        button_export.pack(side=tk.LEFT)
+
+        button_close = tk.Button(
+            frame_button, text="Close", command=top.destroy)
+        button_close.pack(side=tk.LEFT)
+
+        def export_spec(xs, yss, path, top):
+            if xs is None or yss is None or path is None:
+                msg_window("Error", "Something is missing")
+            else:
+                xs = mfn.transpose1d(xs)
+                yss = mfn.transpose1d(yss)
+                out = []
+                for i in range(len(xs)):
+                    out.append(xs[i] + yss[i])
+                processor.csv_writer(out, path)
+            msg_window("Success", "Successfully exported")
+            top.destroy()
+
+    @staticmethod
+    def display_ave_from_range():
+        class Data:
+            out_dir = None  # output directory path
+            x_series = []
+            y_ave = []
             specidl = 0
             specidh = 0
-            numAved = 0
+            num_ave = 0
 
         path_var = tk.StringVar()
 
         def export():
-            top = tk.Toplevel()
-            top.title("Export average spectrum")
+            top_top = tk.Toplevel()
+            top_top.title("Export average spectrum")
             button_dir = tk.Button(
-                top, text="Choose path", command=askpath)
+                top_top, text="Choose path", command=ask_path)
             button_dir.pack()
             path_var.set("Please select path")
             label_path = tk.Label(
-                top, textvariable=path_var, justify=tk.CENTER)
+                top_top, textvariable=path_var, justify=tk.CENTER)
             label_path.pack()
             button_exc = tk.Button(
-                top, text="Export",
+                top_top, text="Export",
                 command=lambda: exportSpec(
-                    data.xseries, data.yave, data.outdir, top))
+                    Data.x_series, Data.y_ave, Data.out_dir, top_top))
             button_exc.pack()
-            button_close = tk.Button(
-                top, text="Close", command=top.destroy)
-            button_close.pack()
+
+            button_close_top = tk.Button(
+                top_top, text="Close", command=top_top.destroy)
+            button_close_top.pack()
 
         # open directory window
-        def askpath():
-            "Return the selected directory name"
+        def ask_path():
+            """Return the selected directory name"""
 
             file_opt = options = {}
             options['initialdir'] = 'User\\'
             options['parent'] = root
             options['title'] = 'Choose directory'
 
-            # get pathname
+            # get path name
             pathname = tk.filedialog.asksaveasfilename(**file_opt)
 
             if pathname:
-                data.outdir = pathname
+                Data.out_dir = pathname
                 path_var.set(pathname)
 
         def dbInsert(xs, ys, numAve):
@@ -690,7 +686,7 @@ class MainApp:
                 msg_window("Error", "Gap range does not exist")
             else:
                 aveID = dbu.insertAveSpectrum(xs, ys, 0, 0, numAve)
-                for i in range(int(data.specidl), int(data.specidh) + 1):
+                for i in range(int(Data.specidl), int(Data.specidh) + 1):
                     dbu.insertSpecAvePair(i, aveID)
                 msg_window("Success", "Average spectra inserted into database")
 
@@ -713,7 +709,7 @@ class MainApp:
 
         button_display = tk.Button(
             frame_button, text="Display",
-            command=lambda: display(fig, ax, canvas, toolbar))
+            command=lambda: display(ax, canvas, toolbar))
         button_display.pack(side=tk.LEFT)
 
         button_clear = tk.Button(
@@ -732,7 +728,7 @@ class MainApp:
 
         button_db = tk.Button(
             frame_button, text="Add to DB",
-            command=lambda: dbInsert(data.xseries, data.yave, data.numAved))
+            command=lambda: dbInsert(Data.x_series, Data.y_ave, Data.num_ave))
         button_db.pack(side=tk.LEFT)
 
         button_close = tk.Button(
@@ -752,36 +748,36 @@ class MainApp:
             msg_window("Success", "Successfully exported")
             top.destroy()
 
-        def display(fig, ax, canvas, toolbar):
-            data.specidl = entryl.get()
-            data.specidh = entryh.get()
-            if data.specidl is "":
+        def display(axis, canvas, toolbar):
+            Data.specidl = entryl.get()
+            Data.specidh = entryh.get()
+            if Data.specidl is "":
                 msg_window("Error", "Please provide min ID")
-            elif data.specidh is "":
+            elif Data.specidh is "":
                 msg_window("Error", "Please provide max ID")
-            elif int(data.specidl) > int(data.specidh):
+            elif int(Data.specidl) > int(Data.specidh):
                 msg_window("Error", "Lower bound > upper bound")
             else:
                 specData = dba.getSpectrumFromRange(
-                    int(data.specidl), int(data.specidh))
-                data.numAved = int(data.specidh) - int(data.specidl) + 1
+                    int(Data.specidl), int(Data.specidh))
+                Data.num_ave = int(Data.specidh) - int(Data.specidl) + 1
                 if specData is None:
                     msg_window(
                         "No spectrum found",
                         "Spectrum of this ID is not found")
                 else:
-                    data.xseries = dbapi.textToSeries(specData[0][1])
-                    yseries, data.yave = [], []
+                    Data.x_series = dbapi.textToSeries(specData[0][1])
+                    yseries, Data.y_ave = [], []
                     for i in range(len(specData)):
                         yseries.append(dbapi.textToSeries(specData[i][2]))
-                    for x in range(len(data.xseries)):
-                        data.yave.append(mfn.mean([col[x] for col in yseries]))
+                    for x in range(len(Data.x_series)):
+                        Data.y_ave.append(mfn.mean([col[x] for col in yseries]))
 
-                    if len(data.xseries) is not len(data.yave):
+                    if len(Data.x_series) is not len(Data.y_ave):
                         msg_window("Error", "x and y have different dimension")
 
                     # use '-o' for dots
-                    ax.plot(data.xseries, data.yave, '-')
+                    axis.plot(Data.x_series, Data.y_ave, '-')
                     canvas.show()
                     canvas.get_tk_widget().pack(
                         side=tkc.BOTTOM, fill=tkc.BOTH, expand=1)
@@ -819,13 +815,13 @@ class MainApp:
 
             button_go = tk.Button(
                 top, text="Calculate",
-                command=lambda: getGap(data.xseries, data.yave, top))
+                command=lambda: get_gap(Data.x_series, Data.y_ave))
             button_go.grid(row=2)
 
             button_close = tk.Button(top, text="Close", command=top.destroy)
             button_close.grid(row=2, column=1)
 
-            def getGap(xs, yss, top):
+            def get_gap(xs, yss):
                 gapmin = float(entry_gapmin.get())
                 gapmax = float(entry_gapmax.get())
                 if gapmin is "":
@@ -833,9 +829,9 @@ class MainApp:
                 elif gapmax is "":
                     msg_window("Error", "Please provide maximum gap size")
                 else:
-                    gapSize = mfn.poly_gap(
+                    gap_size = mfn.poly_gap(
                         xs[0:20], yss[0:20], gapmin, gapmax).real
-                    ax.axvline(gapSize)
+                    ax.axvline(gap_size)
                     canvas.show()
                     canvas.get_tk_widget().pack(
                         side=tkc.BOTTOM, fill=tkc.BOTH, expand=1)
@@ -845,10 +841,11 @@ class MainApp:
                         side=tkc.TOP, fill=tkc.BOTH, expand=1)
                 msg_window(
                     "Done",
-                    "Gap size is {}".format(gapSize))
+                    "Gap size is {}".format(gap_size))
 
-    def rmvOutlier(self):
-        class data():
+    @staticmethod
+    def rmv_outlier():
+        class Data:
             outdir = None  # output directory path
             xseries = []
             yave = []
@@ -863,12 +860,12 @@ class MainApp:
                 msg_window("Error", "Gap range does not exist")
             else:
                 aveID = dbu.insertAveSpectrum(xs, ys, 0, 0, numAve)
-                for i in range(int(data.specidl), int(data.specidh) + 1):
+                for i in range(int(Data.specidl), int(Data.specidh) + 1):
                     dbu.insertSpecAvePair(i, aveID)
                 msg_window("Success", "Average spectra inserted into database")
 
         top = tk.Toplevel()
-        top.title("Display averge spectra")
+        top.title("Display average spectra")
         label = tk.Label(top, text="Enter spectrum ID range")
         label.pack()
         entryl = tk.Entry(top)
@@ -891,7 +888,7 @@ class MainApp:
 
         button_display = tk.Button(
             frame_button, text="Display",
-            command=lambda: display(fig, ax, canvas, toolbar))
+            command=lambda: display(ax, canvas, toolbar))
         button_display.pack(side=tk.LEFT)
 
         button_clear = tk.Button(
@@ -901,43 +898,43 @@ class MainApp:
 
         button_db = tk.Button(
             frame_button, text="Add to DB",
-            command=lambda: dbInsert(data.xseries, data.yave, data.numAved))
+            command=lambda: dbInsert(Data.xseries, Data.yave, Data.numAved))
         button_db.pack(side=tk.LEFT)
 
         button_close = tk.Button(
             frame_button, text="Close", command=top.destroy)
         button_close.pack(side=tk.LEFT)
 
-        def display(fig, ax, canvas, toolbar):
-            data.specidl = entryl.get()
-            data.specidh = entryh.get()
-            if data.specidl is "":
+        def display(axis, canvas, toolbar):
+            Data.specidl = entryl.get()
+            Data.specidh = entryh.get()
+            if Data.specidl is "":
                 msg_window("Error", "Please provide min ID")
-            elif data.specidh is "":
+            elif Data.specidh is "":
                 msg_window("Error", "Please provide max ID")
-            elif int(data.specidl) > int(data.specidh):
+            elif int(Data.specidl) > int(Data.specidh):
                 msg_window("Error", "Lower bound > upper bound")
             else:
                 specData = dba.getSpectrumFromRange(
-                    int(data.specidl), int(data.specidh))
-                data.numAved = int(data.specidh) - int(data.specidl) + 1
+                    int(Data.specidl), int(Data.specidh))
+                Data.numAved = int(Data.specidh) - int(Data.specidl) + 1
                 if specData is None:
                     msg_window(
                         "No spectrum found",
                         "Spectrum of this ID is not found")
                 else:
-                    data.xseries = dbapi.textToSeries(specData[0][1])
-                    yseries, data.yave = [], []
+                    Data.xseries = dbapi.textToSeries(specData[0][1])
+                    yseries, Data.yave = [], []
                     for i in range(len(specData)):
                         yseries.append(dbapi.textToSeries(specData[i][2]))
-                    for x in range(len(data.xseries)):
-                        data.yave.append(mfn.mean([col[x] for col in yseries]))
+                    for x in range(len(Data.xseries)):
+                        Data.yave.append(mfn.mean([col[x] for col in yseries]))
 
-                    if len(data.xseries) is not len(data.yave):
+                    if len(Data.xseries) is not len(Data.yave):
                         msg_window("Error", "x and y have different dimension")
 
                     # use '-o' for dots
-                    ax.plot(data.xseries, data.yave, '-')
+                    axis.plot(Data.xseries, Data.yave, '-')
                     canvas.show()
                     canvas.get_tk_widget().pack(
                         side=tkc.BOTTOM, fill=tkc.BOTH, expand=1)
@@ -952,8 +949,8 @@ def main():
     welcome = tk.Label(root, text="Welcome to STMPLab")
     welcome.grid(row=0, columnspan=2)
 
-    mainApp = MainApp(root, 'STMPLab')
-    mainApp.menu(root)
+    main_app = MainApp(root, 'STMPLab')
+    main_app.menu(root)
 
 if __name__ == "__main__":
     root = tk.Tk()
