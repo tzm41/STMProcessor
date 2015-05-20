@@ -10,3 +10,5 @@ Data/
 
 # binary files
 *.pyc
+
+*.db
