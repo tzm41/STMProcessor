@@ -1,7 +1,7 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
-import tkinter as Tk
-import tkinter.constants as Tkc
+import tkinter as tk
+import tkinter.constants as tkc
 from Database import dbaccess as dba, dbcreate as dbc, dbupdate as dbu, dbapi
 from Processor import processor
 import matplotlib.pyplot as plt
@@ -21,11 +21,11 @@ logging.basicConfig(
 
 # message box displaying title and text with a close button
 def msg_window(title, text):
-    top = Tk.Toplevel()
+    top = tk.Toplevel()
     top.title(title)
-    msg = Tk.Message(top, text=text, width=300)
+    msg = tk.Message(top, text=text, width=300)
     msg.pack()
-    button = Tk.Button(top, text="Close", command=top.destroy)
+    button = tk.Button(top, text="Close", command=top.destroy)
     button.pack()
 
 
@@ -42,52 +42,52 @@ class MainApp:
         self.root = master
         self.root.title(title)
 
-        frame = Tk.Frame(root)
+        frame = tk.Frame(root)
         frame.grid(row=1, columnspan=2)
 
-        self.quit_button = Tk.Button(
+        self.quit_button = tk.Button(
             frame, text="QUIT", fg="red", command=frame.quit)
         self.quit_button.grid(row=0, column=0)
 
-        self.create_button = Tk.Button(
+        self.create_button = tk.Button(
             frame, text="Create new/erase existing database",
             command=self.createdb)
         self.create_button.grid(row=1)
 
-        self.num_button = Tk.Button(
-            frame, text="Spectra in database", command=self.displaySpectraNum)
+        self.num_button = tk.Button(
+            frame, text="Spectra in database", command=self.display_spectra_num)
         self.num_button.grid(row=2)
 
-        self.button_open = Tk.Button(
+        self.button_open = tk.Button(
             frame, text="Open...", command=self.open_file)
         self.button_open.grid(row=3)
 
-        self.button_display_spec = Tk.Button(
+        self.button_display_spec = tk.Button(
             frame, text="Display spectra", command=self.displaySpectrumFromID)
         self.button_display_spec.grid(row=4)
 
-        self.button_rm_outlier = Tk.Button(
+        self.button_rm_outlier = tk.Button(
             frame, text="Remove outliers",
             command=self.rmvOutlier)
         self.button_rm_outlier.grid(row=5)
 
-        self.button_ave_spec = Tk.Button(
+        self.button_ave_spec = tk.Button(
             frame, text="Calculate average spectra",
             command=self.displayAveFromRange)
         self.button_ave_spec.grid(row=6)
 
-        self.button_ave_spec_from_box = Tk.Button(
+        self.button_ave_spec_from_box = tk.Button(
             frame, text="Display average spectra of specific boxcar width",
-            command=self.displayAveFromBoxcar)
+            command=self.display_ave_from_boxcar)
         self.button_ave_spec_from_box.grid(row=7)
 
-        self.button_gap_from_id = Tk.Button(
-            frame, text="Get gap size from spectrum", command=self.showGapSize)
+        self.button_gap_from_id = tk.Button(
+            frame, text="Get gap size from spectrum", command=self.show_gap_size)
         self.button_gap_from_id.grid(row=8)
 
     def menu(self, master):
-        menu_bar = Tk.Menu(master)
-        file_menu = Tk.Menu(menu_bar, tearoff=0)
+        menu_bar = tk.Menu(master)
+        file_menu = tk.Menu(menu_bar, tearoff=0)
         file_menu.add_command(label="Open...", command=self.open_file)
         file_menu.add_command(label="Quit", command=root.quit)
         file_menu.add_separator()
@@ -109,7 +109,7 @@ class MainApp:
             options['multiple'] = 1
 
             # get filename
-            filename = Tk.filedialog.askopenfilename(**file_opt)
+            filename = tk.filedialog.askopenfilename(**file_opt)
 
             if filename:
                 self.sourcefile = filename
@@ -166,7 +166,7 @@ class MainApp:
                 out_dir = None
                 gap_stat, average_box = [], []
 
-            path_var = Tk.StringVar()
+            path_var = tk.StringVar()
             status_var.set("Processing... Please wait.")
 
             def askpath():
@@ -178,7 +178,7 @@ class MainApp:
                 options['title'] = 'Choose directory'
 
                 # get pathname
-                pathname = Tk.filedialog.askdirectory(**file_opt)
+                pathname = tk.filedialog.askdirectory(**file_opt)
 
                 if pathname:
                     Data.out_dir = pathname
@@ -245,161 +245,165 @@ class MainApp:
 
                     status_var.set("Done.")
 
-                    top_top = Tk.Toplevel()
+                    top_top = tk.Toplevel()
                     top_top.title("Choose output path")
 
-                    button_path = Tk.Button(
+                    button_path = tk.Button(
                         top_top, text="Select path", command=askpath)
                     button_path.grid(row=1)
 
-                    path_var = Tk.StringVar()
+                    path_var = tk.StringVar()
                     path_var.set("Please select output path.")
 
-                    label_path = Tk.Label(
-                        top_top, textvariable=path_var, justify=Tk.CENTER)
+                    label_path = tk.Label(
+                        top_top, textvariable=path_var, justify=tk.CENTER)
                     label_path.grid(row=1, column=1)
 
-                    button_export = Tk.Button(
+                    button_export = tk.Button(
                         top_top, text="Export", command=output)
                     button_export.grid(row=2, columnspan=2)
 
-        top = Tk.Toplevel()
+        top = tk.Toplevel()
 
-        frame_entry = Tk.Frame(top)
+        frame_entry = tk.Frame(top)
         frame_entry.grid(row=1, columnspan=2)
 
-        label_doping = Tk.Label(frame_entry, text="Doping")
-        label_doping.grid(row=1, sticky=Tk.E)
+        label_doping = tk.Label(frame_entry, text="Doping")
+        label_doping.grid(row=1, sticky=tk.E)
 
-        entry_doping = Tk.Entry(frame_entry)
+        entry_doping = tk.Entry(frame_entry)
         entry_doping.insert(0, "78K UD")
         entry_doping.grid(row=1, column=1)
 
-        label_boxcar = Tk.Label(frame_entry, text="Boxcar width")
-        label_boxcar.grid(row=1, column=2, sticky=Tk.E)
+        label_boxcar = tk.Label(frame_entry, text="Boxcar width")
+        label_boxcar.grid(row=1, column=2, sticky=tk.E)
 
-        entry_boxcar = Tk.Entry(frame_entry)
+        entry_boxcar = tk.Entry(frame_entry)
         entry_boxcar.insert(0, "10")
         entry_boxcar.grid(row=1, column=3)
 
-        label_delim = Tk.Label(frame_entry, text="CSV delimiter")
-        label_delim.grid(row=2, sticky=Tk.E)
+        label_delim = tk.Label(frame_entry, text="CSV delimiter")
+        label_delim.grid(row=2, sticky=tk.E)
 
-        entry_delim = Tk.Entry(frame_entry)
+        entry_delim = tk.Entry(frame_entry)
         entry_delim.insert(0, ",")
         entry_delim.grid(row=2, column=1)
 
-        label_stedv = Tk.Label(frame_entry, text="Stdev multiple")
-        label_stedv.grid(row=2, column=2, sticky=Tk.E)
+        label_stedv = tk.Label(frame_entry, text="Stdev multiple")
+        label_stedv.grid(row=2, column=2, sticky=tk.E)
 
-        entry_stedv = Tk.Entry(frame_entry)
+        entry_stedv = tk.Entry(frame_entry)
         entry_stedv.insert(0, "2")
         entry_stedv.grid(row=2, column=3)
 
-        label_gapmin = Tk.Label(frame_entry, text="Min gap size (V)")
-        label_gapmin.grid(row=3, sticky=Tk.E)
+        label_gapmin = tk.Label(frame_entry, text="Min gap size (V)")
+        label_gapmin.grid(row=3, sticky=tk.E)
 
-        entry_gapmin = Tk.Entry(frame_entry)
+        entry_gapmin = tk.Entry(frame_entry)
         entry_gapmin.insert(0, "0.025")
         entry_gapmin.grid(row=3, column=1)
 
-        label_gapmax = Tk.Label(frame_entry, text="Max gap size (V)")
-        label_gapmax.grid(row=3, column=2, sticky=Tk.E)
+        label_gapmax = tk.Label(frame_entry, text="Max gap size (V)")
+        label_gapmax.grid(row=3, column=2, sticky=tk.E)
 
-        entry_gapmax = Tk.Entry(frame_entry)
+        entry_gapmax = tk.Entry(frame_entry)
         entry_gapmax.insert(0, "0.425")
         entry_gapmax.grid(row=3, column=3)
 
-        label_xstep = Tk.Label(frame_entry, text="x-step (V)")
-        label_xstep.grid(row=4, column=2, sticky=Tk.E)
+        label_xstep = tk.Label(frame_entry, text="x-step (V)")
+        label_xstep.grid(row=4, column=2, sticky=tk.E)
 
-        entry_xstep = Tk.Entry(frame_entry)
+        entry_xstep = tk.Entry(frame_entry)
         entry_xstep.insert(0, "0.025")
         entry_xstep.grid(row=4, column=3)
 
-        button_openfile = Tk.Button(
+        button_openfile = tk.Button(
             top, text="Open...", command=askopenfilename)
         button_openfile.grid(row=2)
 
-        filepath_var = Tk.StringVar()
+        filepath_var = tk.StringVar()
         filepath_var.set("Please select file.")
-        label_file = Tk.Label(
-            top, textvariable=filepath_var, justify=Tk.CENTER)
+        label_file = tk.Label(
+            top, textvariable=filepath_var, justify=tk.CENTER)
         label_file.grid(row=2, column=1)
 
-        button_insertspec = Tk.Button(
+        button_insertspec = tk.Button(
             top, text="Insert spectra", command=lambda: insert_spectrum(top))
         button_insertspec.grid(row=3)
 
-        insert_var = Tk.StringVar()
-        label_insert = Tk.Label(
-            top, textvariable=insert_var, justify=Tk.CENTER)
+        insert_var = tk.StringVar()
+        label_insert = tk.Label(
+            top, textvariable=insert_var, justify=tk.CENTER)
         label_insert.grid(row=3, column=1)
 
         # plain old process function
-        button_POPF = Tk.Button(
+        button_POPF = tk.Button(
             top, text="Plain old process function", command=POPF)
         button_POPF.grid(row=4)
 
-        status_var = Tk.StringVar()
+        status_var = tk.StringVar()
 
-        label_POPF = Tk.Label(top, textvariable=status_var, justify=Tk.CENTER)
+        label_POPF = tk.Label(top, textvariable=status_var, justify=tk.CENTER)
         label_POPF.grid(row=4, column=1)
 
-        button_close = Tk.Button(top, text="Close", command=top.destroy)
+        button_close = tk.Button(top, text="Close", command=top.destroy)
         button_close.grid(row=5, columnspan=2)
 
-    def createdb(self):
+    @staticmethod
+    def createdb():
         dbc.main
         logging.debug("Finished creating database")
         msg_window("Create database", "Finished creating the database")
 
-    def displaySpectraNum(self):
+    @staticmethod
+    def display_spectra_num():
         num = dba.displaySpectraNum()
         text = "Number of spectra in the database is {}.".format(str(num))
         msg_window("Number of spectra", text)
 
-    def showGapSize(self):
+    @staticmethod
+    def show_gap_size():
         def getGapSize(specID):
             gap = dba.getGap(int(specID))
             msg_window(
                 "Gap size: spec {}".format(specID),
                 "Gap size is {}".format(gap))
 
-        top = Tk.Toplevel()
+        top = tk.Toplevel()
 
-        label = Tk.Label(top, text="Choose from available spectra ID")
+        label = tk.Label(top, text="Choose from available spectra ID")
         label.grid(row=0, columnspan=2)
 
-        frame = Tk.Frame(top)
+        frame = tk.Frame(top)
         frame.grid(row=1, columnspan=2)
 
-        idList = dba.specWithGap()
+        id_list = dba.specWithGap()
 
-        idList_options = [str(row) for row in idList]
-        id_var = Tk.StringVar()
-        id_var.set(idList_options[0])
+        id_list_options = [str(row) for row in id_list]
+        id_var = tk.StringVar()
+        id_var.set(id_list_options[0])
 
-        option = apply(Tk.OptionMenu, (frame, id_var) + tuple(idList_options))
+        option = tk.OptionMenu(*(frame, id_var) + tuple(id_list_options))
         option.grid(row=1, columnspan=2)
 
-        button = Tk.Button(
+        button = tk.Button(
             frame, text="Show", command=lambda: getGapSize(id_var.get()))
         button.grid(row=2)
 
-        button_close = Tk.Button(frame, text="Close", command=top.destroy)
+        button_close = tk.Button(frame, text="Close", command=top.destroy)
         button_close.grid(row=2, column=1)
 
-    def displayAveFromBoxcar(self):
+    @staticmethod
+    def display_ave_from_boxcar():
         class Data():
             xseries = []
             boxcar = 0
 
-        top = Tk.Toplevel()
+        top = tk.Toplevel()
         top.title("Display averge spectra")
-        label = Tk.Label(top, text="Enter boxcar width")
+        label = tk.Label(top, text="Enter boxcar width")
         label.pack()
-        entry = Tk.Entry(top)
+        entry = tk.Entry(top)
         entry.pack()
 
         fig = plt.figure(figsize=(5, 5), dpi=100)
@@ -407,22 +411,22 @@ class MainApp:
         canvas = FigureCanvasTkAgg(fig, master=top)
         toolbar = NavigationToolbar2TkAgg(canvas, top)
 
-        frame_button = Tk.Frame(top)
+        frame_button = tk.Frame(top)
         frame_button.pack()
 
-        button_display = Tk.Button(
+        button_display = tk.Button(
             frame_button, text="Display",
             command=lambda: display(fig, ax, canvas, toolbar))
-        button_display.pack(side=Tk.LEFT)
+        button_display.pack(side=tk.LEFT)
 
-        button_clear = Tk.Button(
+        button_clear = tk.Button(
             frame_button, text="Clear",
             command=lambda: clear_canvas(canvas))
-        button_clear.pack(side=Tk.LEFT)
+        button_clear.pack(side=tk.LEFT)
 
-        button_close = Tk.Button(
+        button_close = tk.Button(
             frame_button, text="Close", command=top.destroy)
-        button_close.pack(side=Tk.LEFT)
+        button_close.pack(side=tk.LEFT)
 
         def display(fig, ax, canvas, toolbar):
             Data.boxcar = entry.get()
@@ -448,11 +452,11 @@ class MainApp:
                         ax.plot(Data.xseries, ys, '-')
                     canvas.show()
                     canvas.get_tk_widget().pack(
-                        side=Tkc.BOTTOM, fill=Tkc.BOTH, expand=1)
+                        side=tkc.BOTTOM, fill=tkc.BOTH, expand=1)
 
                     toolbar.update()
                     canvas._tkcanvas.pack(
-                        side=Tkc.TOP, fill=Tkc.BOTH, expand=1)
+                        side=tkc.TOP, fill=tkc.BOTH, expand=1)
 
     def displaySpectrumFromID(self):
         class data():
@@ -460,30 +464,30 @@ class MainApp:
             xseries = yseries = None
             specid = 0
 
-        path_var = Tk.StringVar()
+        path_var = tk.StringVar()
 
         def export():
-            top = Tk.Toplevel()
+            top = tk.Toplevel()
             top.title("Export spectrum")
-            button_dir = Tk.Button(
-                top, text="Choose path", command=askpath)
+            button_dir = tk.Button(
+                top, text="Choose path", command=ask_path)
             button_dir.pack()
             path_var.set("Please select path")
-            label_path = Tk.Label(
-                top, textvariable=path_var, justify=Tk.CENTER)
+            label_path = tk.Label(
+                top, textvariable=path_var, justify=tk.CENTER)
             label_path.pack()
-            button_exc = Tk.Button(
+            button_exc = tk.Button(
                 top, text="Export",
                 command=lambda: exportSpec(
                     data.xseries, data.yseries, data.outdir, top))
             button_exc.pack()
-            button_close = Tk.Button(
+            button_close = tk.Button(
                 top, text="Close", command=top.destroy)
             button_close.pack()
 
         # open directory window
-        def askpath():
-            "Return the selected directory name"
+        def ask_path():
+            """Return the selected directory name"""
 
             file_opt = options = {}
             options['initialdir'] = 'User\\'
@@ -491,17 +495,17 @@ class MainApp:
             options['title'] = 'Choose directory'
 
             # get pathname
-            pathname = Tk.filedialog.asksaveasfilename(**file_opt)
+            pathname = tk.filedialog.asksaveasfilename(**file_opt)
 
             if pathname:
                 data.outdir = pathname
                 path_var.set(pathname)
 
-        top = Tk.Toplevel()
+        top = tk.Toplevel()
         top.title("Display spectra")
-        label = Tk.Label(top, text="Enter spectrum ID")
+        label = tk.Label(top, text="Enter spectrum ID")
         label.pack()
-        entry = Tk.Entry(top)
+        entry = tk.Entry(top)
         entry.pack()
 
         fig = plt.figure(figsize=(5, 5), dpi=100)
@@ -509,31 +513,31 @@ class MainApp:
         canvas = FigureCanvasTkAgg(fig, master=top)
         toolbar = NavigationToolbar2TkAgg(canvas, top)
 
-        frame_button = Tk.Frame(top)
+        frame_button = tk.Frame(top)
         frame_button.pack()
 
-        button_display = Tk.Button(
+        button_display = tk.Button(
             frame_button, text="Display",
             command=lambda: display(fig, ax, canvas, toolbar))
-        button_display.pack(side=Tk.LEFT)
+        button_display.pack(side=tk.LEFT)
 
-        button_clear = Tk.Button(
+        button_clear = tk.Button(
             frame_button, text="Clear",
             command=lambda: clear_canvas(canvas))
-        button_clear.pack(side=Tk.LEFT)
+        button_clear.pack(side=tk.LEFT)
 
-        button_gap = Tk.Button(
+        button_gap = tk.Button(
             frame_button, text="Gap",
             command=lambda: showGap(ax, canvas, toolbar, data.specid))
-        button_gap.pack(side=Tk.LEFT)
+        button_gap.pack(side=tk.LEFT)
 
-        button_export = Tk.Button(
+        button_export = tk.Button(
             frame_button, text="Export...", command=export)
-        button_export.pack(side=Tk.LEFT)
+        button_export.pack(side=tk.LEFT)
 
-        button_close = Tk.Button(
+        button_close = tk.Button(
             frame_button, text="Close", command=top.destroy)
-        button_close.pack(side=Tk.LEFT)
+        button_close.pack(side=tk.LEFT)
 
         def exportSpec(xs, yss, path, top):
             if xs is None or yss is None or path is None:
@@ -566,45 +570,45 @@ class MainApp:
                     ax.plot(data.xseries, data.yseries, '-')
                     canvas.show()
                     canvas.get_tk_widget().pack(
-                        side=Tkc.BOTTOM, fill=Tkc.BOTH, expand=1)
+                        side=tkc.BOTTOM, fill=tkc.BOTH, expand=1)
 
                     toolbar.update()
                     canvas._tkcanvas.pack(
-                        side=Tkc.TOP, fill=Tkc.BOTH, expand=1)
+                        side=tkc.TOP, fill=tkc.BOTH, expand=1)
 
         def showGap(ax, canvas, toolbar, id):
-            top = Tk.Toplevel()
+            top = tk.Toplevel()
 
-            frame_entry = Tk.Frame(top)
+            frame_entry = tk.Frame(top)
             frame_entry.grid(row=1, columnspan=2)
 
-            label_gapmin = Tk.Label(frame_entry, text="Min gap size (V)")
-            label_gapmin.grid(row=1, sticky=Tk.E)
+            label_gapmin = tk.Label(frame_entry, text="Min gap size (V)")
+            label_gapmin.grid(row=1, sticky=tk.E)
 
-            entry_gapmin = Tk.Entry(frame_entry)
+            entry_gapmin = tk.Entry(frame_entry)
             entry_gapmin.insert(0, "0.025")
             entry_gapmin.grid(row=1, column=1)
 
-            label_gapmax = Tk.Label(frame_entry, text="Max gap size (V)")
-            label_gapmax.grid(row=1, column=2, sticky=Tk.E)
+            label_gapmax = tk.Label(frame_entry, text="Max gap size (V)")
+            label_gapmax.grid(row=1, column=2, sticky=tk.E)
 
-            entry_gapmax = Tk.Entry(frame_entry)
+            entry_gapmax = tk.Entry(frame_entry)
             entry_gapmax.insert(0, "0.425")
             entry_gapmax.grid(row=1, column=3)
 
-            label_boxcar = Tk.Label(frame_entry, text="Boxcar width")
-            label_boxcar.grid(row=1, column=4, sticky=Tk.E)
+            label_boxcar = tk.Label(frame_entry, text="Boxcar width")
+            label_boxcar.grid(row=1, column=4, sticky=tk.E)
 
-            entry_boxcar = Tk.Entry(frame_entry)
+            entry_boxcar = tk.Entry(frame_entry)
             entry_boxcar.insert(0, "10")
             entry_boxcar.grid(row=1, column=5)
 
-            button_go = Tk.Button(
+            button_go = tk.Button(
                 top, text="Calculate",
                 command=lambda: getGap(data.xseries, data.yseries, top))
             button_go.grid(row=2)
 
-            button_close = Tk.Button(top, text="Close", command=top.destroy)
+            button_close = tk.Button(top, text="Close", command=top.destroy)
             button_close.grid(row=2, column=1)
 
             def getGap(xs, yss, top):
@@ -623,11 +627,11 @@ class MainApp:
                     ax.axvline(gapSize)
                     canvas.show()
                     canvas.get_tk_widget().pack(
-                        side=Tkc.BOTTOM, fill=Tkc.BOTH, expand=1)
+                        side=tkc.BOTTOM, fill=tkc.BOTH, expand=1)
 
                     toolbar.update()
                     canvas._tkcanvas.pack(
-                        side=Tkc.TOP, fill=Tkc.BOTH, expand=1)
+                        side=tkc.TOP, fill=tkc.BOTH, expand=1)
                 dbu.insertGap(data.specid, gapSize, boxcar)
                 msg_window(
                     "Done",
@@ -642,24 +646,24 @@ class MainApp:
             specidh = 0
             numAved = 0
 
-        path_var = Tk.StringVar()
+        path_var = tk.StringVar()
 
         def export():
-            top = Tk.Toplevel()
+            top = tk.Toplevel()
             top.title("Export average spectrum")
-            button_dir = Tk.Button(
+            button_dir = tk.Button(
                 top, text="Choose path", command=askpath)
             button_dir.pack()
             path_var.set("Please select path")
-            label_path = Tk.Label(
-                top, textvariable=path_var, justify=Tk.CENTER)
+            label_path = tk.Label(
+                top, textvariable=path_var, justify=tk.CENTER)
             label_path.pack()
-            button_exc = Tk.Button(
+            button_exc = tk.Button(
                 top, text="Export",
                 command=lambda: exportSpec(
                     data.xseries, data.yave, data.outdir, top))
             button_exc.pack()
-            button_close = Tk.Button(
+            button_close = tk.Button(
                 top, text="Close", command=top.destroy)
             button_close.pack()
 
@@ -673,7 +677,7 @@ class MainApp:
             options['title'] = 'Choose directory'
 
             # get pathname
-            pathname = Tk.filedialog.asksaveasfilename(**file_opt)
+            pathname = tk.filedialog.asksaveasfilename(**file_opt)
 
             if pathname:
                 data.outdir = pathname
@@ -690,13 +694,13 @@ class MainApp:
                     dbu.insertSpecAvePair(i, aveID)
                 msg_window("Success", "Average spectra inserted into database")
 
-        top = Tk.Toplevel()
+        top = tk.Toplevel()
         top.title("Display averge spectra")
-        label = Tk.Label(top, text="Enter spectrum ID range")
+        label = tk.Label(top, text="Enter spectrum ID range")
         label.pack()
-        entryl = Tk.Entry(top)
+        entryl = tk.Entry(top)
         entryl.pack()
-        entryh = Tk.Entry(top)
+        entryh = tk.Entry(top)
         entryh.pack()
 
         fig = plt.figure(figsize=(5, 5), dpi=100)
@@ -704,36 +708,36 @@ class MainApp:
         canvas = FigureCanvasTkAgg(fig, master=top)
         toolbar = NavigationToolbar2TkAgg(canvas, top)
 
-        frame_button = Tk.Frame(top)
+        frame_button = tk.Frame(top)
         frame_button.pack()
 
-        button_display = Tk.Button(
+        button_display = tk.Button(
             frame_button, text="Display",
             command=lambda: display(fig, ax, canvas, toolbar))
-        button_display.pack(side=Tk.LEFT)
+        button_display.pack(side=tk.LEFT)
 
-        button_clear = Tk.Button(
+        button_clear = tk.Button(
             frame_button, text="Clear",
             command=lambda: clear_canvas(canvas))
-        button_clear.pack(side=Tk.LEFT)
+        button_clear.pack(side=tk.LEFT)
 
-        button_gap = Tk.Button(
+        button_gap = tk.Button(
             frame_button, text="Gap",
             command=lambda: showGap(ax, canvas, toolbar))
-        button_gap.pack(side=Tk.LEFT)
+        button_gap.pack(side=tk.LEFT)
 
-        button_export = Tk.Button(
+        button_export = tk.Button(
             frame_button, text="Export...", command=export)
-        button_export.pack(side=Tk.LEFT)
+        button_export.pack(side=tk.LEFT)
 
-        button_db = Tk.Button(
+        button_db = tk.Button(
             frame_button, text="Add to DB",
             command=lambda: dbInsert(data.xseries, data.yave, data.numAved))
-        button_db.pack(side=Tk.LEFT)
+        button_db.pack(side=tk.LEFT)
 
-        button_close = Tk.Button(
+        button_close = tk.Button(
             frame_button, text="Close", command=top.destroy)
-        button_close.pack(side=Tk.LEFT)
+        button_close.pack(side=tk.LEFT)
 
         def exportSpec(xs, yss, path, top):
             if xs is None or yss is None or path is None:
@@ -780,45 +784,45 @@ class MainApp:
                     ax.plot(data.xseries, data.yave, '-')
                     canvas.show()
                     canvas.get_tk_widget().pack(
-                        side=Tkc.BOTTOM, fill=Tkc.BOTH, expand=1)
+                        side=tkc.BOTTOM, fill=tkc.BOTH, expand=1)
 
                     toolbar.update()
                     canvas._tkcanvas.pack(
-                        side=Tkc.TOP, fill=Tkc.BOTH, expand=1)
+                        side=tkc.TOP, fill=tkc.BOTH, expand=1)
 
         def showGap(ax, canvas, toolbar):
-            top = Tk.Toplevel()
+            top = tk.Toplevel()
 
-            frame_entry = Tk.Frame(top)
+            frame_entry = tk.Frame(top)
             frame_entry.grid(row=1, columnspan=2)
 
-            label_gapmin = Tk.Label(frame_entry, text="Min gap size (V)")
-            label_gapmin.grid(row=1, sticky=Tk.E)
+            label_gapmin = tk.Label(frame_entry, text="Min gap size (V)")
+            label_gapmin.grid(row=1, sticky=tk.E)
 
-            entry_gapmin = Tk.Entry(frame_entry)
+            entry_gapmin = tk.Entry(frame_entry)
             entry_gapmin.insert(0, "0.025")
             entry_gapmin.grid(row=1, column=1)
 
-            label_gapmax = Tk.Label(frame_entry, text="Max gap size (V)")
-            label_gapmax.grid(row=1, column=2, sticky=Tk.E)
+            label_gapmax = tk.Label(frame_entry, text="Max gap size (V)")
+            label_gapmax.grid(row=1, column=2, sticky=tk.E)
 
-            entry_gapmax = Tk.Entry(frame_entry)
+            entry_gapmax = tk.Entry(frame_entry)
             entry_gapmax.insert(0, "0.425")
             entry_gapmax.grid(row=1, column=3)
 
-            label_boxcar = Tk.Label(frame_entry, text="Boxcar width")
-            label_boxcar.grid(row=1, column=4, sticky=Tk.E)
+            label_boxcar = tk.Label(frame_entry, text="Boxcar width")
+            label_boxcar.grid(row=1, column=4, sticky=tk.E)
 
-            entry_boxcar = Tk.Entry(frame_entry)
+            entry_boxcar = tk.Entry(frame_entry)
             entry_boxcar.insert(0, "10")
             entry_boxcar.grid(row=1, column=5)
 
-            button_go = Tk.Button(
+            button_go = tk.Button(
                 top, text="Calculate",
                 command=lambda: getGap(data.xseries, data.yave, top))
             button_go.grid(row=2)
 
-            button_close = Tk.Button(top, text="Close", command=top.destroy)
+            button_close = tk.Button(top, text="Close", command=top.destroy)
             button_close.grid(row=2, column=1)
 
             def getGap(xs, yss, top):
@@ -834,11 +838,11 @@ class MainApp:
                     ax.axvline(gapSize)
                     canvas.show()
                     canvas.get_tk_widget().pack(
-                        side=Tkc.BOTTOM, fill=Tkc.BOTH, expand=1)
+                        side=tkc.BOTTOM, fill=tkc.BOTH, expand=1)
 
                     toolbar.update()
                     canvas._tkcanvas.pack(
-                        side=Tkc.TOP, fill=Tkc.BOTH, expand=1)
+                        side=tkc.TOP, fill=tkc.BOTH, expand=1)
                 msg_window(
                     "Done",
                     "Gap size is {}".format(gapSize))
@@ -863,17 +867,17 @@ class MainApp:
                     dbu.insertSpecAvePair(i, aveID)
                 msg_window("Success", "Average spectra inserted into database")
 
-        top = Tk.Toplevel()
+        top = tk.Toplevel()
         top.title("Display averge spectra")
-        label = Tk.Label(top, text="Enter spectrum ID range")
+        label = tk.Label(top, text="Enter spectrum ID range")
         label.pack()
-        entryl = Tk.Entry(top)
+        entryl = tk.Entry(top)
         entryl.pack()
-        entryh = Tk.Entry(top)
+        entryh = tk.Entry(top)
         entryh.pack()
-        label_stdev = Tk.Label(top, text="Enter standard deviation multiple")
+        label_stdev = tk.Label(top, text="Enter standard deviation multiple")
         label_stdev.pack()
-        entry = Tk.Entry(top)
+        entry = tk.Entry(top)
         entry.insert(0, "2")
         entry.pack()
 
@@ -882,27 +886,27 @@ class MainApp:
         canvas = FigureCanvasTkAgg(fig, master=top)
         toolbar = NavigationToolbar2TkAgg(canvas, top)
 
-        frame_button = Tk.Frame(top)
+        frame_button = tk.Frame(top)
         frame_button.pack()
 
-        button_display = Tk.Button(
+        button_display = tk.Button(
             frame_button, text="Display",
             command=lambda: display(fig, ax, canvas, toolbar))
-        button_display.pack(side=Tk.LEFT)
+        button_display.pack(side=tk.LEFT)
 
-        button_clear = Tk.Button(
+        button_clear = tk.Button(
             frame_button, text="Clear",
             command=lambda: clear_canvas(canvas))
-        button_clear.pack(side=Tk.LEFT)
+        button_clear.pack(side=tk.LEFT)
 
-        button_db = Tk.Button(
+        button_db = tk.Button(
             frame_button, text="Add to DB",
             command=lambda: dbInsert(data.xseries, data.yave, data.numAved))
-        button_db.pack(side=Tk.LEFT)
+        button_db.pack(side=tk.LEFT)
 
-        button_close = Tk.Button(
+        button_close = tk.Button(
             frame_button, text="Close", command=top.destroy)
-        button_close.pack(side=Tk.LEFT)
+        button_close.pack(side=tk.LEFT)
 
         def display(fig, ax, canvas, toolbar):
             data.specidl = entryl.get()
@@ -936,22 +940,22 @@ class MainApp:
                     ax.plot(data.xseries, data.yave, '-')
                     canvas.show()
                     canvas.get_tk_widget().pack(
-                        side=Tkc.BOTTOM, fill=Tkc.BOTH, expand=1)
+                        side=tkc.BOTTOM, fill=tkc.BOTH, expand=1)
 
                     toolbar.update()
                     canvas._tkcanvas.pack(
-                        side=Tkc.TOP, fill=Tkc.BOTH, expand=1)
+                        side=tkc.TOP, fill=tkc.BOTH, expand=1)
 
 
 # main entrance
 def main():
-    welcome = Tk.Label(root, text="Welcome to STMPLab")
+    welcome = tk.Label(root, text="Welcome to STMPLab")
     welcome.grid(row=0, columnspan=2)
 
     mainApp = MainApp(root, 'STMPLab')
     mainApp.menu(root)
 
 if __name__ == "__main__":
-    root = Tk.Tk()
+    root = tk.Tk()
     main()
     root.mainloop()
