@@ -1,7 +1,9 @@
+#!/usr/bin/env python
+
 # helper methods for DB I/Os
 
 __author__ = 'Colin Tan'
-__version__ = '0.5'
+__version__ = '0.6'
 
 
 # convert float series to text
@@ -11,4 +13,4 @@ def seriesToText(series):
 
 # convert text to float series
 def textToSeries(text):
-    return map(float, text.split(","))
+    return list(map(float, text.split(",")))

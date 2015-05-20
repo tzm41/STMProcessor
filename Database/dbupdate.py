@@ -1,6 +1,6 @@
 import sqlite3 as db
 import os
-import dbapi
+from Database import dbapi
 
 __author__ = 'Colin Tan'
 __version__ = '1.0'
@@ -33,12 +33,32 @@ def insertSpectrum(xseries, yseries, doping):
     return newID
 
 
+# remove one spectrum
+def removeSpectrum(specID):
+    conn = db.connect(filename)
+    cursor = conn.cursor()
+    sql = "DELETE FROM SpecData WHERE SpecID = ?"
+    cursor.execute(sql, (specID,))
+    conn.commit()
+    conn.close()
+
+
 # insert gap data
-def insertGap(SpecID, gapSize, boxcarWidth):
+def insertGap(specID, gapSize, boxcarWidth):
     conn = db.connect(filename)
     cursor = conn.cursor()
     sql = "INSERT OR REPLACE INTO GapData VALUES (?, ?, ?)"
-    cursor.execute(sql, (SpecID, gapSize, boxcarWidth))
+    cursor.execute(sql, (specID, gapSize, boxcarWidth))
+    conn.commit()
+    conn.close()
+
+
+# remove gap data
+def removeGap(specID):
+    conn = db.connect(filename)
+    cursor = conn.cursor()
+    sql = "DELETE FROM GapData WHERE SpecID = ?"
+    cursor.execute(sql, (specID,))
     conn.commit()
     conn.close()
 

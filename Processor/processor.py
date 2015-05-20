@@ -2,10 +2,10 @@
 
 import os.path
 import csv
-import mfn
+from Processor import mfn
 
 __author__ = 'Colin Tan'
-__version__ = '1.2'
+__version__ = '1.5'
 
 
 # generate file path base on current python script path
@@ -19,7 +19,7 @@ def gen_path(relPath, absPath=None):
 
 # csv writer method
 def csv_writer(data, path):
-    with open(path, 'wb') as csv_file:
+    with open(path, 'wt') as csv_file:
         writer = csv.writer(csv_file, delimiter=',')
         for line in data:
             writer.writerow(line)
@@ -82,20 +82,20 @@ def elimStdev(xs, yseries, stdev_multi):
 
     # normalize each spectrum with the average of all spectrum
     ysum = sum(yMeanAtx)
-    for i in xrange(len(yseries)):
+    for i in range(len(yseries)):
         yseries[i] = mfn.normalize(yseries[i], ysum)
 
     # pick out abnormal ys by comparing with
     # specified stdev threshold
     exclusions, excluded = [], []
-    for i in xrange(0, len(yseries)):
-        for j in xrange(0, len(xs)):
+    for i in range(0, len(yseries)):
+        for j in range(0, len(xs)):
             if abs(yseries[i][j] -
                     yMeanAtx[j]) > stdev_multi * yStdevAtx[j]:
                 exclusions.append(i)
                 break
     # generate filtered y series
-    for num in [x for x in xrange(len(yseries)) if x not in exclusions]:
+    for num in [x for x in range(len(yseries)) if x not in exclusions]:
         excluded.append(yseries[num])
     return exclusions, excluded
 

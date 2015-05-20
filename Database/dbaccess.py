@@ -21,11 +21,11 @@ def displaySpectraNum():
 
 
 # get one spectrum from ID
-def getSpectrumFromID(id):
+def getSpectrumFromID(specID):
     conn = db.connect(filename)
     cursor = conn.cursor()
     sql = "SELECT * FROM SpecData WHERE SpecID = ?"
-    cursor.execute(sql, (id,))
+    cursor.execute(sql, (specID,))
 
     data = cursor.fetchone()
     conn.close()

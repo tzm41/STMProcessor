@@ -42,11 +42,11 @@ def abs(num):
 # function skips but treat the skipped item as a position
 def boxcar(numbers, width, exclusion=None):
     boxed = []
-    for i in range((width - 1) / 2, len(numbers) - (width - 1) / 2):
+    for i in range(int((width - 1) / 2), int(len(numbers) - (width - 1) / 2)):
         subbox = []
         for j in range(0, len(numbers[i])):
             subsubbox = []
-            rg = range(i - (width - 1) / 2, i + 1 + (width - 1) / 2)
+            rg = range(int(i - (width - 1) / 2), int(i + 1 + (width - 1) / 2))
             for k in rg:
                 if exclusion is None:
                     subsubbox.append(numbers[k][j])
@@ -89,7 +89,7 @@ def sample(numbers, width, exclusion=None):
 # with the odd width defined
 def boxcar_simple(numbers, width):
     boxed = []
-    for i in range((width - 1) / 2, len(numbers) - (width - 1) / 2):
+    for i in range(int((width - 1) / 2), int(len(numbers) - (width - 1) / 2)):
         boxed.append(mean(numbers[i - (width - 1) / 2:
                                   i + 1 + (width - 1) / 2]))
     return boxed

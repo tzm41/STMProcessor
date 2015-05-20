@@ -23,8 +23,8 @@ def main():
     for cmd in sqlcmds:
         try:
             cursor.execute(cmd)
-        except OperationalError, msg:
-            print("Command skipped: ", msg)
+        except OperationalError:
+            print("Command skipped: ", cmd)
 
     conn.commit()
     cursor.close()

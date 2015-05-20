@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 
-import Tkinter as Tk
-import tkFileDialog
-import Tkconstants as Tkc
+import tkinter as Tk
+import tkinter.constants as Tkc
 from Database import dbaccess as dba, dbcreate as dbc, dbupdate as dbu, dbapi
 from Processor import processor
 import matplotlib.pyplot as plt
@@ -110,7 +109,7 @@ class MainApp:
             options['multiple'] = 1
 
             # get filename
-            filename = tkFileDialog.askopenfilename(**file_opt)
+            filename = Tk.filedialog.askopenfilename(**file_opt)
 
             if filename:
                 self.sourcefile = filename
@@ -179,7 +178,7 @@ class MainApp:
                 options['title'] = 'Choose directory'
 
                 # get pathname
-                pathname = tkFileDialog.askdirectory(**file_opt)
+                pathname = Tk.filedialog.askdirectory(**file_opt)
 
                 if pathname:
                     Data.out_dir = pathname
@@ -194,7 +193,8 @@ class MainApp:
             def output():
                 processor.csv_writer(
                     Data.gap_stat, "{}/gap.csv".format(Data.out_dir))
-                logging.debug("Gap output path" + "{}/gap.csv".format(Data.out_dir))
+                logging.debug(
+                    "Gap output path" + "{}/gap.csv".format(Data.out_dir))
                 processor.csv_writer(
                     Data.average_box, "{}/ave.csv".format(Data.out_dir))
                 top_top.destroy()
@@ -229,9 +229,11 @@ class MainApp:
                     xs, yss = processor.readFile(self.sourcefile, delim)
                 except ValueError:
                     if delim is ",":
-                        status_var.set("Error, wrong csv delimiter. Try semicolon.")
+                        status_var.set(
+                            "Error, wrong csv delimiter. Try semicolon.")
                     elif delim is ";":
-                        status_var.set("Error, wrong csv delimiter. Try comma.")
+                        status_var.set(
+                            "Error, wrong csv delimiter. Try comma.")
                     else:
                         status_var.set("Error, wrong csv delimiter.")
                 else:
@@ -246,7 +248,8 @@ class MainApp:
                     top_top = Tk.Toplevel()
                     top_top.title("Choose output path")
 
-                    button_path = Tk.Button(top_top, text="Select path", command=askpath)
+                    button_path = Tk.Button(
+                        top_top, text="Select path", command=askpath)
                     button_path.grid(row=1)
 
                     path_var = Tk.StringVar()
@@ -488,7 +491,7 @@ class MainApp:
             options['title'] = 'Choose directory'
 
             # get pathname
-            pathname = tkFileDialog.asksaveasfilename(**file_opt)
+            pathname = Tk.filedialog.asksaveasfilename(**file_opt)
 
             if pathname:
                 data.outdir = pathname
@@ -670,7 +673,7 @@ class MainApp:
             options['title'] = 'Choose directory'
 
             # get pathname
-            pathname = tkFileDialog.asksaveasfilename(**file_opt)
+            pathname = Tk.filedialog.asksaveasfilename(**file_opt)
 
             if pathname:
                 data.outdir = pathname
