@@ -8,10 +8,11 @@ logging.basicConfig(
     format='[%(levelname)s] (%(threadName)-10s) %(message)s')
 
 
-class processorUnitTest(unittest.TestCase):
+class ProcessorUnitTest(unittest.TestCase):
+
+    def runTest(self):
+        self.testDRange()
 
     def testDRange(self):
-        processor.drange(0, 2, 0.25)
+        processor.f_range(0, 2, 0.25)
 
-if __name__ == "__main__":
-    unittest.main()

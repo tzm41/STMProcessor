@@ -12,7 +12,7 @@ from threading import Thread
 import logging
 
 __author__ = 'Colin Tan'
-__version__ = '2.0'
+__version__ = '2.1'
 
 logging.basicConfig(
     level=logging.DEBUG,
@@ -140,13 +140,13 @@ class MainApp:
             elif self.sourcefile is None:
                 insert_var.set("No file selected.")
             else:
-                boxcar = int(boxcar)
-                std_dev = int(std_dev)
-                gap_min = float(gap_min)
-                gap_max = float(gap_max)
-                xs, yss = processor.readFile(self.sourcefile, delimiter)
+                # boxcar = int(boxcar)
+                # std_dev = int(std_dev)
+                # gap_min = float(gap_min)
+                # gap_max = float(gap_max)
+                xs, yss = processor.read_file(self.sourcefile, delimiter)
                 # TODO: add exclusion feature
-                exclusions, excluded = processor.elimStdev(xs, yss, 2)
+                # exclusions, excluded = processor.eliminate_std_dev(xs, yss, 2)
                 count = 0
                 for ys in yss:
                     count += 1
@@ -180,9 +180,9 @@ class MainApp:
                     path_var.set(pathname)
 
             def processing():
-                exclusions, excluded = processor.elimStdev(xs, yss, std_dev)
+                exclusions, excluded = processor.eliminate_std_dev(xs, yss, std_dev)
                 boxcar_result = processor.boxcar(yss, boxcar, exclusions)
-                Data.gap_stat, Data.average_box = processor.groupAverage(
+                Data.gap_stat, Data.average_box = processor.group_average(
                     xs, boxcar_result, gap_min, gap_max, x_step)
 
             def output():
@@ -221,7 +221,7 @@ class MainApp:
                 gap_max = float(gap_max)
                 x_step = float(x_step)
                 try:
-                    xs, yss = processor.readFile(self.sourcefile, delimiter)
+                    xs, yss = processor.read_file(self.sourcefile, delimiter)
                 except ValueError:
                     if delimiter is ",":
                         status_var.set(
@@ -359,7 +359,7 @@ class MainApp:
     @staticmethod
     def show_gap_size():
         def get_gap_size(spec_id):
-            gap = dba.getGap(int(spec_id))
+            gap = dba.get_gap(int(spec_id))
             msg_window(
                 "Gap size: spec {}".format(spec_id),
                 "Gap size is {}".format(gap))
@@ -577,10 +577,10 @@ class MainApp:
                     toolbar.update()
                     canvas._tkcanvas.pack(
                         side=tkc.TOP, fill=tkc.BOTH, expand=1)
-                dbu.insertGap(Data.spec_id, gap_size, boxcar)
-                msg_window(
-                    "Done",
-                    "Gap size is {}, saved into database.".format(gap_size))
+                    dbu.insertGap(Data.spec_id, gap_size, boxcar)
+                    msg_window(
+                        "Done",
+                        "Gap size is {}, saved into database.".format(gap_size))
 
         top = tk.Toplevel()
         top.title("Display spectra")
@@ -743,9 +743,9 @@ class MainApp:
                     toolbar.update()
                     canvas._tkcanvas.pack(
                         side=tkc.TOP, fill=tkc.BOTH, expand=1)
-                msg_window(
-                    "Done",
-                    "Gap size is {}".format(gap_size))
+                    msg_window(
+                        "Done",
+                        "Gap size is {}".format(gap_size))
 
         def display():
             Data.spec_id_l = entry_l.get()

@@ -9,11 +9,16 @@ logging.basicConfig(
     format='[%(levelname)s] (%(threadName)-10s) %(message)s')
 
 
-class dbUnitTest(unittest.TestCase):
+class DBUnitTest(unittest.TestCase):
+
+    def runTest(self):
+        self.testAccess()
+        self.testAPI()
+        self.testUpdate()
 
     def testAccess(self):
         num = dba.displaySpectraNum()
-        logging.debug("Spectrumb number is " + str(num))
+        logging.debug("Spectrum number is " + str(num))
         dba.getSpectrumFromID(4)
         dba.getSpectrumFromDoping('78K UD')
 
@@ -24,9 +29,8 @@ class dbUnitTest(unittest.TestCase):
     def testUpdate(self):
         dbu.insertGap(5, 0.261, 10)
         dbu.removeGap(5)
-        newID = dbu.insertSpectrum(
+        new_id = dbu.insertSpectrum(
             [2.12, 2.123, 5.643], [12.3, 1, 123], "78K UD")
-        dbu.removeSpectrum(newID)
+        dbu.removeSpectrum(new_id)
 
-if __name__ == "__main__":
-    unittest.main()
+

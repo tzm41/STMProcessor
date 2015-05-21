@@ -3,10 +3,10 @@
 import os.path
 import csv
 import sys
-import mfn
+from Processor import mfn
 
 __author__ = 'Colin Tan'
-__version__ = '2.3.5'
+__version__ = '2.3.6'
 
 
 # generate file path base on current python script path
@@ -65,7 +65,7 @@ def main(argv):
                 path_read.append(gen_path(path, None))
         csv_delim = argv[3]
     else:
-        print 'Invalid arguments'
+        print('Invalid arguments')
         sys.exit()
     direname = os.path.dirname(path_read[0])
     path_gap = '{}/Out/gap_{}.csv'.format(direname, boxcar_width)
@@ -76,7 +76,7 @@ def main(argv):
 
     xs, boxed = [], []
     for path in path_read:
-        print 'Data read from file {}.'.format(path)
+        print('Data read from file {}.'.format(path))
         txt_file.write('-----{}-----\n'.format(os.path.basename(path)))
         txt_file.write('Data read from file {}.\n'.format(path))
 
@@ -98,10 +98,10 @@ def main(argv):
             if newRow[0] != 0.0:
                 yseries.append(newRow)
 
-        print 'File contains x series with {} points.'.format(len(xs))
+        print('File contains x series with {} points.'.format(len(xs)))
         txt_file.write('File contains x series with {} points.\n'
                        .format(len(xs)))
-        print 'File contains {} y series.'.format(len(yseries))
+        print('File contains {} y series.'.format(len(yseries)))
         txt_file.write('File contains {} y series.\n'.format(len(yseries)))
 
         # calculate standard deviation for each row
@@ -112,41 +112,41 @@ def main(argv):
             ysAtx.append([col[i] for col in yseries])
         # calculate standard deviations
         for nums in ysAtx:
-            yStdevAtx.append(mfn.stdev(nums))
+            yStdevAtx.append(mfn.std_dev(nums))
             yMeanAtx.append(mfn.mean(nums))
 
         # normalize each spectrum with the average of all spectrum
         ysum = sum(yMeanAtx)
-        for i in xrange(0, len(yseries)):
+        for i in range(0, len(yseries)):
             yseries[i] = mfn.normalize(yseries[i], ysum)
 
         # pick out abnormal ys by comparing with
         # specified stdev threshold
         exclusions, excluded = [], []
-        for i in xrange(0, len(yseries)):
-            for j in xrange(0, len(xs)):
+        for i in range(0, len(yseries)):
+            for j in range(0, len(xs)):
                 if abs(yseries[i][j] -
-                        yMeanAtx[j]) > stdev_multi * yStdevAtx[j]:
+                               yMeanAtx[j]) > stdev_multi * yStdevAtx[j]:
                     exclusions.append(i)
                     break
         # generate filtered y series
-        for num in [x for x in xrange(0, len(yseries)) if x not in exclusions]:
+        for num in [x for x in range(0, len(yseries)) if x not in exclusions]:
             excluded.append(yseries[num])
         # before making yseries = excluded, process using boxcar
         # or sampling to prevent averaging over sparse samples
 
-        print 'For defined {} * sigma threshold, {} y series are excluded.' \
-            .format(stdev_multi, len(exclusions))
+        print('For defined {} * sigma threshold, {} y series are excluded.'
+              .format(stdev_multi, len(exclusions)))
         txt_file.write(
             'For defined {} * sigma threshold, {} y series are excluded.\n'
-            .format(stdev_multi, len(exclusions)))
+                .format(stdev_multi, len(exclusions)))
 
         # boxcar before gap determination
         if boxcar_width == 0:
             boxed = yseries
         else:
             boxing = mfn.boxcar(yseries, boxcar_width, exclusions)
-            print 'Boxcar width {}.'.format(boxcar_width)
+            print('Boxcar width {}.'.format(boxcar_width))
             txt_file.write('Boxcar width {}.\n'.format(boxcar_width))
             boxed.extend(boxing)
 
@@ -157,13 +157,13 @@ def main(argv):
         # saving only five decimal places
         # have to use col[::-1] to reverse the list
         gap_stat.append(["{0:.5f}".format(mfn.poly_gap(xs[0:20], col[0:20],
-                        gap_size_min, gap_size_max).real)])
+                                                       gap_size_min, gap_size_max).real)])
     csv_writer(gap_stat, path_gap)
-    print 'Gap stat written to file {}, containing {} numbers' \
-        .format(path_gap, len(gap_stat))
+    print('Gap stat written to file {}, containing {} numbers'
+          .format(path_gap, len(gap_stat)))
     txt_file.write(
         'Gap stat after boxcar written to file {}, containing {} numbers.\n'
-        .format(path_gap, len(gap_stat)))
+            .format(path_gap, len(gap_stat)))
 
     # export averaged spectra for each gap size group
     average_box, avbox_out = [[0] + xs], []
@@ -178,14 +178,15 @@ def main(argv):
     for i in range(0, len(average_box[1])):
         avbox_out.append([row[i] for row in average_box])
     csv_writer(avbox_out, path_ave)
-    print 'Average in gap size group' \
-        ' written to file {}, containing {} series' \
-        .format(path_ave, len(avbox_out[0]))
+    print('Average in gap size group'
+          ' written to file {}, containing {} series'
+          .format(path_ave, len(avbox_out[0])))
     txt_file.write(
         'Average in gap size group'
         ' written to file {}, containing {} series\n'
-        .format(path_ave, len(avbox_out[0])))
+            .format(path_ave, len(avbox_out[0])))
     txt_file.close()
+
 
 if __name__ == "__main__":
     # format: main([absolute path, relative path, boxcar width, csv delimiter])
