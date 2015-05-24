@@ -6,7 +6,7 @@ __version__ = '2.5'
 
 
 # calculate mean for a number list
-def mean(numbers):
+def mean(numbers) -> float:
     if numbers:
         n, ave = len(numbers), 0
         ave = sum(numbers)
@@ -17,7 +17,7 @@ def mean(numbers):
 
 
 # calculate standard deviation for a number list
-def std_dev(numbers):
+def std_dev(numbers) -> float:
     from math import sqrt
     n, ave, std = len(numbers), mean(numbers), 0
     for a in numbers:
@@ -87,7 +87,7 @@ def sample(numbers, width, exclusion=None):
 
 # calculate boxcar average for a number list
 # with the odd width defined
-def boxcar_simple(numbers, width):
+def boxcar_simple(numbers, width) -> [float]:
     boxed = []
     for i in range(int((width - 1) / 2), int(len(numbers) - (width - 1) / 2)):
         boxed.append(mean(
@@ -96,7 +96,7 @@ def boxcar_simple(numbers, width):
 
 
 # sample by averaging over a defined width
-def sample_simple(numbers, width):
+def sample_simple(numbers, width) -> [float]:
     averaged = []
     for i in range(0, len(numbers), width):
         averaged.append(mean(numbers[i:i + width]))
@@ -105,7 +105,7 @@ def sample_simple(numbers, width):
 
 # normalize a number list, such that sum = const, with
 # the ability to regard to only a portion of the data
-def normalize(numbers, const, start=0, end=None):
+def normalize(numbers, const, start=0, end=None) -> [float]:
     if end is None:
         end = len(numbers)
     total = 0
@@ -121,7 +121,7 @@ def normalize(numbers, const, start=0, end=None):
 # the double of the one-sided gap, which is determined by defined
 # percentage of this side's plateau level, which is in turn
 # approximated from the defined section from the series
-def get_gap(y_series, center_index, percent, start, end, search_dir='right'):
+def get_gap(y_series, center_index, percent, start, end, search_dir='right') -> float:
     threshold = mean(y_series[start:end]) * percent
     diff = []
     if search_dir is 'right':
@@ -135,7 +135,7 @@ def get_gap(y_series, center_index, percent, start, end, search_dir='right'):
 
 
 # linear regression gap computation algorithm
-def lin_gap(x_series, y_series, percent, start, end, search_dir='right'):
+def lin_gap(x_series, y_series, percent, start, end, search_dir='right') -> float:
     a, b = linear_regression(x_series[start:end], y_series[start:end])
     for i in range(0, len(y_series)):
         y_series[i] -= a * x_series[i] + b
@@ -143,7 +143,7 @@ def lin_gap(x_series, y_series, percent, start, end, search_dir='right'):
 
 
 # get gap size from peak
-def get_gap_peak(y_series, percent, search_dir='right'):
+def get_gap_peak(y_series, percent, search_dir='right') -> float:
     y_min = min(y_series)
     y_min_index = y_series.index(y_min)
     threshold = y_min * (1 - percent)
@@ -159,7 +159,7 @@ def get_gap_peak(y_series, percent, search_dir='right'):
 
 
 # linear regression algorithm
-def linear_regression(x, y):
+def linear_regression(x, y) -> (float, float):
     length = len(x)
     sum_x = sum(x)
     sum_y = sum(y)
@@ -177,7 +177,7 @@ def linear_regression(x, y):
 # polynomial regression gap computation algorithm
 # by computing fourth degree polynomial and taking
 # second derivative to locate the gap
-def poly_gap(x_series, y_series, gapmin, gapmax):
+def poly_gap(x_series, y_series, gapmin, gapmax) -> float:
     # calculate poly fit, and convert it into 1D object
     z = np.poly1d(np.polyfit(x_series, y_series, 5))
     # take derivatives
@@ -189,7 +189,7 @@ def poly_gap(x_series, y_series, gapmin, gapmax):
 
 # custom picking out roots
 # smaller in real roots, and single real root
-def pick_root(roots):
+def pick_root(roots) -> float:
     if len(roots) == 2:
         root1 = roots[0]
         root2 = roots[1]
@@ -210,5 +210,5 @@ def pick_root(roots):
 
 
 # transpose 1D vector from horizontal to vertical
-def transpose1d(vec):
+def transpose1d(vec) -> [[float]]:
     return [[row] for row in vec]
