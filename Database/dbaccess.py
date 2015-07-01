@@ -115,11 +115,11 @@ def specWithGap():
 
 
 # get gap size of a spectrum
-def getGap(specID):
+def get_gap(spec_id):
     conn = db.connect(filename)
     cursor = conn.cursor()
-    getGap = "SELECT GapSize FROM GapData WHERE SpecID = ?"
-    cursor.execute(getGap, (specID,))
+    sql = "SELECT GapSize FROM GapData WHERE SpecID = ?"
+    cursor.execute(sql, (spec_id,))
     gap = cursor.fetchone()[0]
     conn.close()
     return gap
