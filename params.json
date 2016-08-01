@@ -1,0 +1,6 @@
+{
+  "name": "STMProcessor",
+  "tagline": "STM data processing program",
+  "body": "# STMPLab\r\nSTM data processing program\r\n\r\n## Purpose\r\nImport, store, and sort data obtained from STM instrument. Process and interpret the data.\r\n\r\n## Structure\r\nMain packages used:\r\n* Python\r\n * NumPy package for scientific calculation\r\n * SQLite3 package for SQL integration\r\n * Tkinter package for GUI\r\n* LaTeX\r\n * tikz and\r\n * pgfplots are heavily relied on for graphing results.\r\n* SQLite\r\n",
+  "note": "Don't delete this file! It's used internally to help with page regeneration."
+}
